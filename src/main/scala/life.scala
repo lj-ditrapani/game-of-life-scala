@@ -1,21 +1,8 @@
 package info.ditrapani.game_of_life
 
-/*
-import scalafx.application.JFXApp
-import scalafx.application.JFXApp.PrimaryStage
-import scalafx.scene.Scene
-*/
-
-/*
-object LifeFX extends JFXApp {
-  // def main(args: Array[String]): Unit = println("Hi!")
-}
-*/
-
 object Life {
   def main(args: Array[String]): Unit = {
     println("Hi!")
-    println(System.getenv("JAVA_HOME"))
   }
 }
 
