@@ -4,12 +4,16 @@ import scalafx.application.JFXApp
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
+import scalafx.animation.AnimationTimer
 
 object LifeFX extends JFXApp {
   val canvas = new Canvas(800, 800)
   val gc = canvas.graphicsContext2D
   canvas.translateX = 0
   canvas.translateY = 0
+
+  gc.setFill(Color.rgb(20, 20, 20))
+  gc.fillRect(0, 0, 800, 800)
 
   gc.setFill(Color.rgb(200, 220, 255))
 
@@ -29,13 +33,32 @@ object LifeFX extends JFXApp {
   gc.fillRect(d + offset, d, w, w)
   count += 1
 
-
   stage = new JFXApp.PrimaryStage {
     title = "Hello Stage"
     scene = new Scene(800, 800) {
       content = canvas
     }
   }
+
+  var lastTime = 0L
+  var r = 0
+
+  val timer = AnimationTimer(t => {
+    if (lastTime == 0L) {
+      lastTime = t
+    }
+    else if (t - lastTime > 500e6) {
+      lastTime = t
+      gc.setFill(Color.rgb(r, 200, 20))
+      gc.fillRect(0, 0, 800, 800)
+      r += 10
+      r = r % 256
+      // computer next cell table
+      // render cell table
+    }
+  })
+
+  timer.start()
 }
 
 case class Adder(val a: Int) {
