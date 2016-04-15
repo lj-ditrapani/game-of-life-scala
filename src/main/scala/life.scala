@@ -40,22 +40,18 @@ object LifeFX extends JFXApp {
     }
   }
 
-  var lastTime = System.nanoTime()
+  var last_time = System.nanoTime()
   var r = 0
 
-  AnimationTimer(t => {
-    if (lastTime == 0L) {
-      lastTime = t
-    }
-    else if (t - lastTime > 500000000) {
-      lastTime = t
+  AnimationTimer(curr_time => {
+    if (curr_time - last_time > 500000000) {
+      last_time = curr_time
 
       gc.setFill(Color.rgb(r, 0, 100))
-      // gc.clearRect(0, 0, stage.getWidth(), stage.getHeight())
       gc.fillRect(0, 0, stage.getWidth(), stage.getHeight())
       r += 10
       r = r % 256
-      // computer next cell table
+      // compute next cell table
       // render cell table
     }
   }).start()
