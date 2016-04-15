@@ -3,7 +3,41 @@ package info.ditrapani.game_of_life
 import org.scalatest.{FunSpec, Matchers}
 
 class LifeSpec extends FunSpec with Matchers {
-  describe("Game of Life") {
+  describe("Grid") {
+  }
+
+  describe("Cell") {
+    describe("alive") {
+      it("it returns false if dead") {
+        Cell(false).alive should be (false)
+      }
+
+      it("it returns true if alive") {
+        Cell(true).alive should be (true)
+      }
+    }
+  }
+
+  describe("Grid Class") {
+  }
+
+  describe("Grid Object") {
+    describe("line_lengths_match") {
+      it("returns true if all lines are the same length") {
+        val lines = Vector("--++-", "+-+-+", "++--+")
+        Grid.line_lengths_match(lines) should === (true)
+      }
+
+      it("returns false if the second line differs in length") {
+        val lines = Vector("+-+-+", "+-+-", "+-+-")
+        Grid.line_lengths_match(lines) should === (false)
+      }
+
+      it("returns false the last line differs in length") {
+        val lines = Vector("+-+-+", "+-+-+", "+-+-")
+        Grid.line_lengths_match(lines) should === (false)
+      }
+    }
   }
 
   describe("Adder") {
