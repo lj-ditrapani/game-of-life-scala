@@ -1,6 +1,9 @@
 package info.ditrapani.game_of_life
 
 case class Grid(val cells: Vector[Vector[Cell]]) {
+  override def toString: String = cells.map {
+    rows => rows.map(_.to_char).mkString
+  }.mkString("\n")
 }
 
 object Grid {
@@ -29,7 +32,9 @@ object Grid {
   }
 }
 
-case class Cell(alive: Boolean)
+case class Cell(alive: Boolean) {
+  def to_char: Char = if (alive) '+' else '-'
+}
 
 object Cell {
   def from_char(char: Char): Cell = Cell(char == '+')

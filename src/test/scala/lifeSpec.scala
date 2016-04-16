@@ -16,6 +16,16 @@ class LifeSpec extends FunSpec with Matchers {
         Cell(true).alive should be (true)
       }
     }
+
+    describe("to_char") {
+      it("it returns + if alive") {
+        Cell(true).to_char should be ('+')
+      }
+
+      it("it returns - if dead") {
+        Cell(false).to_char should be ('-')
+      }
+    }
   }
 
   describe("Cell Object") {
@@ -31,6 +41,12 @@ class LifeSpec extends FunSpec with Matchers {
   }
 
   describe("Grid Class") {
+    describe("toString") {
+      it("returns a string representation") {
+        val str = "--+\n-+-\n+--"
+        Grid.build(str).right.get.toString should === (str)
+      }
+    }
   }
 
   describe("Grid Object") {
