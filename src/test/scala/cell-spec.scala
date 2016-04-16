@@ -1,4 +1,4 @@
-package info.ditrapani.game_of_life
+package info.ditrapani.gameoflife
 
 import org.scalatest.{FunSpec, Matchers}
 
@@ -14,13 +14,13 @@ class CellSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("to_char") {
+    describe("toChar") {
       it("returns + if alive") {
-        Cell.living.to_char should be ('+')
+        Cell.living.toChar should be ('+')
       }
 
       it("it returns - if dead") {
-        Cell.dead.to_char should be ('-')
+        Cell.dead.toChar should be ('-')
       }
     }
 

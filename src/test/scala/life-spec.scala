@@ -1,4 +1,4 @@
-package info.ditrapani.game_of_life
+package info.ditrapani.gameoflife
 
 import org.scalatest.{FunSpec, Matchers}
 

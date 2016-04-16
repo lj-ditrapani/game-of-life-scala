@@ -1,4 +1,4 @@
-package info.ditrapani.game_of_life
+package info.ditrapani.gameoflife
 
 import org.scalatest.{FunSpec, Matchers}
 
@@ -52,32 +52,32 @@ class GridSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("line_lengths_match") {
+    describe("lineLengthsMatch") {
       it("returns true if all lines are the same length") {
         val lines = Vector("--++-", "+-+-+", "++--+")
-        Grid.line_lengths_match(lines) should be (true)
+        Grid.lineLengthsMatch(lines) should be (true)
       }
 
       it("returns false if the second line differs in length") {
         val lines = Vector("+-+-+", "+-+-", "+-+-")
-        Grid.line_lengths_match(lines) should be (false)
+        Grid.lineLengthsMatch(lines) should be (false)
       }
 
       it("returns false the last line differs in length") {
         val lines = Vector("+-+-+", "+-+-+", "+-+-")
-        Grid.line_lengths_match(lines) should be (false)
+        Grid.lineLengthsMatch(lines) should be (false)
       }
     }
 
-    describe("only_pluses_and_dashes") {
+    describe("onlyPlusesAndDashes") {
       it("returns true if all lines only have +'s & -'s") {
         val lines = Vector("--++-", "+-+-+", "++--+")
-        Grid.only_pluses_and_dashes(lines) should be (true)
+        Grid.onlyPlusesAndDashes(lines) should be (true)
       }
 
       it("returns false if any line contains something else") {
         val lines = Vector("--++-", "+-+-+", "++|-+")
-        Grid.only_pluses_and_dashes(lines) should be (false)
+        Grid.onlyPlusesAndDashes(lines) should be (false)
       }
     }
   }
