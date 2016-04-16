@@ -4,6 +4,8 @@ case class Grid(val cells: Vector[Vector[Cell]]) {
   override def toString: String = cells.map {
     rows => rows.map(_.to_char).mkString
   }.mkString("\n")
+
+  def alive_neighbors(row: Int, col: Int): Int = 3
 }
 
 object Grid {
@@ -17,7 +19,7 @@ object Grid {
       Left("Board must contain only + and - characters")
     } else {
       def is_alive(char: Char): Boolean = char == '+'
-      val cells = lines.map(_.map(Cell.from_char(_)).to[Vector])
+      val cells = lines.map(_.map(Cell.get(_)).to[Vector])
       Right(Grid(cells))
     }
   }
@@ -34,8 +36,25 @@ object Grid {
 
 case class Cell(alive: Boolean) {
   def to_char: Char = if (alive) '+' else '-'
+
+  def next(neighbor_count: Int): Cell = neighbor_count match {
+    case x if x < 2 => Cell.dead
+    case 2 => Cell.get(alive)
+    case 3 => Cell.living
+    case _ => Cell.dead
+  }
 }
 
 object Cell {
-  def from_char(char: Char): Cell = Cell(char == '+')
+  val living = Cell(true)
+
+  val dead = Cell(false)
+
+  def get(alive: Boolean): Cell = {
+    if (alive) Cell.living else Cell.dead
+  }
+
+  def get(char: Char): Cell = {
+    get(char == '+')
+  }
 }
