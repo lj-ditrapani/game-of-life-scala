@@ -6,7 +6,7 @@ class LifeSpec extends FunSpec with Matchers {
   describe("Grid") {
   }
 
-  describe("Cell") {
+  describe("Cell Class") {
     describe("alive") {
       it("it returns false if dead") {
         Cell(false).alive should be (false)
@@ -14,6 +14,18 @@ class LifeSpec extends FunSpec with Matchers {
 
       it("it returns true if alive") {
         Cell(true).alive should be (true)
+      }
+    }
+  }
+
+  describe("Cell Object") {
+    describe("from_char") {
+      it("returns a dead cell if char is -") {
+        Cell.from_char('-') should === (Cell(false))
+      }
+
+      it("returns an alive cell if char is +") {
+        Cell.from_char('+') should === (Cell(true))
       }
     }
   }

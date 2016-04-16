@@ -14,7 +14,7 @@ object Grid {
       Left("Board must contain only + and - characters")
     } else {
       def is_alive(char: Char): Boolean = char == '+'
-      val cells = lines.map(_.map(c => Cell(is_alive(c))).to[Vector])
+      val cells = lines.map(_.map(Cell.from_char(_)).to[Vector])
       Right(Grid(cells))
     }
   }
@@ -30,3 +30,7 @@ object Grid {
 }
 
 case class Cell(alive: Boolean)
+
+object Cell {
+  def from_char(char: Char): Cell = Cell(char == '+')
+}
