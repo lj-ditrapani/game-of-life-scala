@@ -10,6 +10,31 @@ class GridSpec extends FunSpec with Matchers {
         Grid.build(str).fold(x => x, _.toString) should === (str)
       }
     }
+
+    describe("countAliveNeighbors") {
+      val tests: List[(Int, Int, Int)] = List(
+        (1, 1, 5),
+        (0, 0, 4),
+        (4, 4, 4),
+        (2, 1, 3),
+        (3, 4, 3)
+      )
+
+      val str = """++--+
+                  |--+--
+                  |-++--
+                  |+----
+                  |+---+""".stripMargin
+
+      for (test <- tests) {
+        val (row, column, count) = test
+        val either = Grid.build(str)
+        val result = either.fold(x => -1, _.countAliveNeighbors(row, column))
+        it(s"returns $count at ($row, $column) for given grid") {
+          result should be (count)
+        }
+      }
+    }
   }
 
   describe("Grid Object") {

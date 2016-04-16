@@ -1,14 +1,36 @@
 package info.ditrapani.gameoflife
 
 case class Grid(val cells: Vector[Vector[Cell]]) {
+  val height = cells.size
+  val width = cells.head.size
+
   override def toString: String = cells.map {
     rows => rows.map(_.toChar).mkString
   }.mkString("\n")
 
-  def aliveNeighbors(row: Int, col: Int): Int = 3
+  def countAliveNeighbors(row: Int, column: Int): Int = {
+    def offset(x: Int, dx: Int, size: Int): Int = (x + dx) match {
+      case -1 => size - 1
+      case wrap if wrap == size => 0
+      case x2 => x2
+    }
+    def isAlive(neighbor_delta: (Int, Int)): Boolean = {
+      val (row_delta, column_delta) = neighbor_delta
+      val new_row = offset(row, row_delta, height)
+      val new_column = offset(column, column_delta, width)
+      cells(new_row)(new_column).alive
+    }
+    Grid.neighbor_deltas.map(isAlive).count(x => x)
+  }
 }
 
 object Grid {
+  val neighbor_deltas = List(
+    (-1, -1), (-1, 0), (-1, 1),
+    ( 0, -1),          ( 0, 1),
+    ( 1, -1), ( 1, 0), ( 1, 1)
+  )
+
   def build(str: String): Either[String, Grid] = {
     val lines = str.split("\n").to[Vector]
     if ((lines.size < 3) || (lines.head.size < 3)) {
