@@ -22,6 +22,21 @@ case class Grid(val cells: Vector[Vector[Cell]]) {
     }
     Grid.neighbor_deltas.map(isAlive).count(x => x)
   }
+
+  def nextCell(row: Int, column: Int): Cell = {
+    cells(row)(column).next(countAliveNeighbors(row, column))
+  }
+
+  def next: Grid = {
+    val seq_of_vecs = for (row <- 0 until height) yield {
+      val cell_seq = for (column <- 0 until width) yield {
+        nextCell(row, column)
+      }
+      cell_seq.to[Vector]
+    }
+    val next_cells = seq_of_vecs.to[Vector]
+    Grid(next_cells)
+  }
 }
 
 object Grid {

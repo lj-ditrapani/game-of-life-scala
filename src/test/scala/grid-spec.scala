@@ -35,6 +35,66 @@ class GridSpec extends FunSpec with Matchers {
         }
       }
     }
+
+    describe("next") {
+      it("computes next board 1 cell dies") {
+        val str1 = "+--\n---\n---"
+        val str2 = "---\n---\n---"
+        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+      }
+
+      it("computes next board fills board") {
+        val str1 = "-+-\n-+-\n-+-"
+        val str2 = "+++\n+++\n+++"
+        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+      }
+
+      it("computes next board for cross pulsar") {
+        val str1 = """-----
+                     |--+--
+                     |--+--
+                     |--+--
+                     |-----""".stripMargin
+
+        val str2 = """-----
+                     |-----
+                     |-+++-
+                     |-----
+                     |-----""".stripMargin
+
+        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+        Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
+      }
+
+      it("computes next board for a boat still life") {
+        val str1 = """------
+                     |------
+                     |--+++-
+                     |-+++--
+                     |------
+                     |------""".stripMargin
+
+        val str2 = """------
+                     |---+--
+                     |-+--+-
+                     |-+--+-
+                     |--+---
+                     |------""".stripMargin
+
+        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+        Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
+      }
+
+      it("computes next board for a toad pulsar") {
+        val str1 = """-----
+                     |-++--
+                     |-+-+-
+                     |--+--
+                     |-----""".stripMargin
+
+        Grid.build(str1).fold(x => x, _.next.toString) should === (str1)
+      }
+    }
   }
 
   describe("Grid Object") {
