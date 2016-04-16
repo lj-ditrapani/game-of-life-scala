@@ -108,7 +108,7 @@ class LifeSpec extends FunSpec with Matchers {
     describe("toString") {
       it("returns a string representation") {
         val str = "--+\n-+-\n+--"
-        Grid.build(str).right.get.toString should === (str)
+        Grid.build(str).fold(x => x, _.toString) should === (str)
       }
     }
   }
