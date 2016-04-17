@@ -3,5 +3,5 @@ Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 TODO
 ----
 
-- Graphics animation loop to grid.next & draw
-- end user instructions
+- Command line UI to load game board
+- Command line param to load arbitrary game board from disk instead of jar
