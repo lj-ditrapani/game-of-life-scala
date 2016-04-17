@@ -28,7 +28,7 @@ object LifeFX extends JFXApp {
       params.size > 2,
       params.size == 2 && !params.contains("t"),
       !params.contains("b") && !params.contains("f")
-    ).exists(x => x == true)
+    ).exists(x => x)
   ) {
     printHelpAndExit()
   }
@@ -46,7 +46,7 @@ object LifeFX extends JFXApp {
     val input_stream = getClass.getResourceAsStream("/help.txt")
     val help_text = scala.io.Source.fromInputStream(input_stream).mkString
     println(help_text)
-    for ((name, index) <- boards.view.zipWithIndex) {
+    for ((name, index) <- boards.zipWithIndex) {
       println(s"    ${index + 1}  $name")
     }
     println("\n")
