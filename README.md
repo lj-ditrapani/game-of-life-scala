@@ -29,3 +29,11 @@ Style check; I'm using both wartremover and scalastyle.  The compile task also r
 
     sbt test            # or anything that runs compile
     sbt scalastyle
+
+
+TODO
+----
+
+Configure cell boarder and cell width via command line arguments.
+- margin --m
+- width  --w
