@@ -72,6 +72,8 @@ object LifeFX extends JFXApp {
   }
 
   def loadExternalFile(file_name: String): Unit = {
+    val board_str = scala.io.Source.fromFile(file_name).mkString
+    Grid.build(board_str).right.map(startGfx(_))
   }
 
   def startGfx(grid: Grid): Unit = {
