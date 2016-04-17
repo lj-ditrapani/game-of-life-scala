@@ -5,7 +5,7 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
-import scala.util.Try
+import scala.util.{Try, Success, Failure}
 
 object LifeFX extends JFXApp {
   val boards = Vector(
@@ -72,8 +72,18 @@ object LifeFX extends JFXApp {
   }
 
   def loadExternalFile(file_name: String): Unit = {
-    val board_str = scala.io.Source.fromFile(file_name).mkString
-    Grid.build(board_str).right.map(startGfx(_))
+    def printErrorHelpAndExit(message: String): Unit = {
+      println(s"\n[ERROR] $message\n")
+      printHelpAndExit()
+    }
+    Try(scala.io.Source.fromFile(file_name).mkString) match {
+      case Failure(exception) =>
+        printErrorHelpAndExit(exception.toString())
+      case Success(board_str) => {
+        val board_str = scala.io.Source.fromFile(file_name).mkString
+        Grid.build(board_str).fold(printErrorHelpAndExit(_), startGfx(_))
+      }
+    }
   }
 
   def startGfx(grid: Grid): Unit = {
