@@ -5,6 +5,7 @@ import scalafx.scene.canvas.Canvas
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
+import scala.util.Try
 
 object LifeFX extends JFXApp {
   val boards = Vector(
@@ -17,60 +18,38 @@ object LifeFX extends JFXApp {
     "r-pentomino"
   )
 
-  println("command line args")
-  println("unnamed: " + parameters.unnamed.mkString(" | "))
-  println("named  : " + parameters.named.mkString(" | "))
-  if (parameters.unnamed.exists(p => p == "--help")) {
+  val params = parameters.named
+
+  if (
+    Vector[Boolean](
+      parameters.unnamed.exists(p => p == "--help"),
+      !parameters.unnamed.isEmpty,
+      params.isEmpty,
+      params.size > 2,
+      params.size == 2 && !params.contains("t"),
+      !params.contains("b") && !params.contains("f")
+    ).exists(x => x == true)
+  ) {
     printHelpAndExit()
-  } else if (parameters.named.isEmpty) {
-    printHelpAndExit()
-  } else {
-    // val time_delta = parameters.named.getOrElse("t", "500").toInt
-    val (flag, value) = parameters.named.head
-    flag match {
-      case "b" | "built-in" => loadBuiltIn(value)
-      case "f" | "file" => loadExternalFile(value)
-      case _ => printHelpAndExit()
-    }
+  }
+
+  val time_delta: Long = Try(params.getOrElse("t", "500").toLong)
+    .getOrElse(500L) * 1000000L
+  val (flag, value) = params.filterKeys(_ != "t").head
+  flag match {
+    case "b" | "built-in" => loadBuiltIn(value)
+    case "f" | "file" => loadExternalFile(value)
+    case _ => printHelpAndExit()
   }
 
   def printHelpAndExit(): Unit = {
-    println(
-      """Usage:
-        |java -jar game-of-life-assembly-0.1.0.jar --b=<n>    |
-        |                                          --f=<file> |
-        |                                          --help
-        |                                          [--t=<n>]
-        |
-        |--b=<n>    Run a built-in board where n is a number that maps to the
-        |           corresponding game board as defined in the table below.
-        |
-        |--f=<file> Run a board defined in a file on disk.  The board must be
-        |           at least 3X3.  It can contain only +, - and newlines.  Each
-        |           line represents a row. + means alive and - means dead.  All
-        |           lines must be equal length.
-        |
-        |--help     Print this help text and exit
-        |
-        |--t=<n>    Optional argument.  The time delta between simulation steps
-        |           in miliseconds.  Smaller n means faster simulation.
-        |           Defaults to 500 ms.
-        |
-        |
-        |Built-in game boards
-        |--------------------""".stripMargin)
+    val input_stream = getClass.getResourceAsStream("/help.txt")
+    val help_text = scala.io.Source.fromInputStream(input_stream).mkString
+    println(help_text)
     for ((name, index) <- boards.view.zipWithIndex) {
       println(s"    ${index + 1}  $name")
     }
     println("\n")
-    println(
-      """Example game board:
-        |------
-        |---+--
-        |---+--
-        |---+--
-        |------""".stripMargin
-    )
     System.exit(0)
   }
 
@@ -139,7 +118,7 @@ object LifeFX extends JFXApp {
     drawScene()
 
     AnimationTimer(curr_time => {
-      if (curr_time - last_time > 500000000) {
+      if (curr_time - last_time > time_delta) {
         last_time = curr_time
         curr_grid = curr_grid.next
         drawScene()

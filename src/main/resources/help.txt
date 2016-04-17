@@ -1,0 +1,31 @@
+Usage:
+java -jar game-of-life-assembly-0.1.0.jar --b=<n>    |
+                                          --f=<file> |
+                                          --help
+                                          [--t=<n>]
+
+--b=<n>    Run a built-in board where n is a number that maps to the
+           corresponding game board as defined in the table below.
+
+--f=<file> Run a board defined in a file on disk.  The board must be
+           at least 3X3.  It can contain only +, - and newlines.  Each
+           line represents a row. + means alive and - means dead.  All
+           lines must be equal length.
+
+--help     Print this help text and exit
+
+--t=<n>    Optional argument.  The time delta between simulation steps
+           in milliseconds.  Smaller n means faster simulation.
+           Defaults to 500 ms.
+
+
+Example game board:
+------
+---+--
+---+--
+---+--
+------
+
+
+Built-in game boards
+--------------------
