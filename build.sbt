@@ -9,6 +9,5 @@ lazy val root = (project in file(".")).
   )
 
 libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.60-R9"
-libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.6"
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 wartremoverWarnings ++= Warts.unsafe
