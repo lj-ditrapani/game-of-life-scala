@@ -10,11 +10,8 @@ object LifeFX extends JFXApp {
   Grid.build(getBoardStr).right.map(startGfx(_))
 
   def getBoardStr: String = {
-    """-----
-      |--+--
-      |--+--
-      |--+--
-      |-----""".stripMargin
+    val input_stream = getClass.getResourceAsStream("/acorn.txt")
+    scala.io.Source.fromInputStream(input_stream).mkString
   }
 
   def startGfx(grid: Grid): Unit = {
