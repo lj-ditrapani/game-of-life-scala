@@ -1,7 +1,7 @@
 lazy val root = (project in file(".")).
   settings(
     name := "game-of-life",
-    version := "0.1.0",
+    version := "1.0.0",
     scalaVersion := "2.11.8",
     organization := "ditrapani.info",
     // Fork a new JVM for 'run' and 'test:run', to
