@@ -7,52 +7,65 @@ import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
 
 object LifeFX extends JFXApp {
-  val canvas = new Canvas(800, 800)
-  val gc = canvas.graphicsContext2D
-  canvas.translateX = 0
-  canvas.translateY = 0
+  Grid.build(getBoardStr).right.map(startGfx(_))
 
-  gc.setFill(Color.rgb(20, 20, 20))
-  gc.fillRect(0, 0, 800, 800)
-
-  gc.setFill(Color.rgb(200, 220, 255))
-
-  var count = 0
-  var offset = 0
-  val d = 4
-  val w = 16
-
-
-  offset = count * (d + w)
-  gc.fillRect(d + offset, d, w, w)
-  count += 1
-  offset = count * (d + w)
-  gc.fillRect(d + offset, d, w, w)
-  count += 1
-  offset = count * (d + w)
-  gc.fillRect(d + offset, d, w, w)
-  count += 1
-
-  stage = new JFXApp.PrimaryStage {
-    title = "Hello Stage"
-    scene = new Scene(800, 800) {
-      content = canvas
-    }
+  def getBoardStr: String = {
+    """-----
+      |--+--
+      |--+--
+      |--+--
+      |-----""".stripMargin
   }
 
-  var last_time = System.nanoTime()
-  var r = 0
+  def startGfx(grid: Grid): Unit = {
+    val margin = 4
+    val width = 16
+    val canvas_height = (width + margin) * grid.height + margin
+    val canvas_width = (width + margin) * grid.width + margin
+    val canvas = new Canvas(canvas_width, canvas_height)
+    val gc = canvas.graphicsContext2D
+    canvas.translateX = 0
+    canvas.translateY = 0
 
-  AnimationTimer(curr_time => {
-    if (curr_time - last_time > 500000000) {
-      last_time = curr_time
+    gc.setFill(Color.rgb(20, 20, 20))
+    gc.fillRect(0, 0, canvas_width, canvas_height)
 
-      gc.setFill(Color.rgb(r, 0, 100))
-      gc.fillRect(0, 0, stage.getWidth(), stage.getHeight())
-      r += 10
-      r = r % 256
-      // compute next cell table
-      // render cell table
+    val alive_color = Color.rgb(200, 220, 255)
+    val dead_color = Color.rgb(100, 120, 155)
+
+    stage = new JFXApp.PrimaryStage {
+      title = "Hello Stage"
+      scene = new Scene(canvas_width, canvas_height) {
+        content = canvas
+      }
     }
-  }).start()
+
+    var last_time = System.nanoTime()
+    var curr_grid = grid
+
+    def drawScene(): Unit = {
+      var x = width * -1
+      var y = width * -1
+      for (row <- curr_grid.cells) {
+        x = width * -1
+        y += (width + margin)
+        for (cell <- row) {
+          x += (width + margin)
+          val color = if (cell.alive) alive_color else dead_color
+          gc.setFill(color)
+          gc.fillRect(x, y, width, width)
+        }
+      }
+    }
+
+    drawScene()
+
+    AnimationTimer(curr_time => {
+      if (curr_time - last_time > 500000000) {
+        last_time = curr_time
+        curr_grid = curr_grid.next
+        drawScene()
+      }
+    }).start()
+  }
 }
