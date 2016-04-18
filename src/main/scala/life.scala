@@ -12,8 +12,10 @@ object LifeFX extends JFXApp {
     "acorn",
     "blinkers",
     "blinker",
+    "block-laying-switch-engine2",
     "diehard",
     "glider",
+    "gosper-glider-gun",
     "pentadecathlon",
     "r-pentomino"
   )
