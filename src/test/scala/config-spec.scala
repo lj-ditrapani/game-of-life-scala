@@ -49,8 +49,13 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Right if --b is specified with integer") {
-        Config.load(List(), Map("b" -> "9")) should === (
-          Right(Config(BoardSource.BuiltIn, "", 500))
+        Config.load(List(), Map("b" -> "3")) should === (
+          Right(
+            Config.emptyConfig.copy(
+              board_source = BoardSource.BuiltIn,
+              board_str = "-----\n--+--\n--+--\n--+--\n-----"
+            )
+          )
         )
       }
 
@@ -80,14 +85,38 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Left if both --b and --f are set") {
-        Config.load(List(), Map("b" -> "x", "f" -> "x")) should === (
+        Config.load(List(), Map("b" -> "1", "f" -> "x")) should === (
           Left("Cannot define both --b and --f as board source; pick one")
         )
       }
 
       it("returns a Right if --b and --t are set") {
-        Config.load(List(), Map("b" -> "1", "t" -> "250")) should === (
-          Right(Config(BoardSource.BuiltIn, "", 500))
+        Config.load(List(), Map("b" -> "3", "t" -> "250")) should === (
+          Right(
+            Config.emptyConfig.copy(
+              board_source = BoardSource.BuiltIn,
+              board_str = "-----\n--+--\n--+--\n--+--\n-----",
+              time_delta = 250
+            )
+          )
+        )
+      }
+
+      it("returns a Left if --t is not a number") {
+        Config.load(List(), Map("b" -> "1", "t" -> "foo")) should === (
+          Left("--t must be a positive integer number")
+        )
+      }
+
+      it("returns a Left if --t is 0") {
+        Config.load(List(), Map("b" -> "1", "t" -> "0")) should === (
+          Left("--t must be a positive integer number")
+        )
+      }
+
+      it("returns a Left if --t is negative") {
+        Config.load(List(), Map("b" -> "1", "t" -> "-1")) should === (
+          Left("--t must be a positive integer number")
         )
       }
     }
