@@ -42,6 +42,16 @@ Style check; I'm using both wartremover and scalastyle.  The compile task also r
 TODO
 ----
 
+In config specs; make a
+
+        val blinker_board_num = "3"
+
+or
+
+        val blinker_board_num = boards.get_index("blinker").toString
+
+to easily change in case list order changes when adding new boards
+
 Use a config file.
 Check for config file in local dir & home dir & ~/.config/
 - .ljd-game-of-life

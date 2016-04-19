@@ -25,7 +25,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Left if unknown parameters found in params") {
-        Config.load(List(), Map("a" -> "")) should === (
+        Config.load(List(), Map("b" -> "3", "a" -> "")) should === (
           Left("Unknown command line parameter '--a'")
         )
       }
@@ -53,7 +53,7 @@ class ConfigSpec extends FunSpec with Matchers {
           Right(
             Config.emptyConfig.copy(
               board_source = BoardSource.BuiltIn,
-              board_str = "-----\n--+--\n--+--\n--+--\n-----"
+              board_str = "-----\n--+--\n--+--\n--+--\n-----\n"
             )
           )
         )
@@ -90,16 +90,42 @@ class ConfigSpec extends FunSpec with Matchers {
         )
       }
 
+      it("returns Left if both --f and --b are set") {
+        val f = "src/main/resources/blinker.txt"
+        Config.load(List(), Map("f" -> f, "b" -> "3")) should === (
+          Left("Cannot define both --b and --f as board source; pick one")
+        )
+      }
+
       it("returns a Right if --b and --t are set") {
         Config.load(List(), Map("b" -> "3", "t" -> "250")) should === (
           Right(
             Config.emptyConfig.copy(
               board_source = BoardSource.BuiltIn,
-              board_str = "-----\n--+--\n--+--\n--+--\n-----",
+              board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
               time_delta = 250
             )
           )
         )
+      }
+
+      it("returns a Right if --f is set") {
+        val f = "src/main/resources/blinker.txt"
+        Config.load(List(), Map("f" -> f)) should === (
+          Right(
+            Config.emptyConfig.copy(
+              board_source = BoardSource.File,
+              board_str = "-----\n--+--\n--+--\n--+--\n-----\n"
+            )
+          )
+        )
+      }
+
+      it("returns a Left if --f is not a file") {
+        val f = "src/main/resources/"
+        val msg = """java.io.FileNotFoundException: src/main/resources
+                    |(Is a directory)""".stripMargin.replaceAll("\n", " ")
+        Config.load(List(), Map("f" -> f)) should === (Left(msg))
       }
 
       it("returns a Left if --t is not a number") {

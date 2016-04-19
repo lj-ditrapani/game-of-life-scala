@@ -10,7 +10,7 @@ object BoardSource extends Enumeration {
 case class Config(
   board_source: BoardSource.Source,
   board_str: String,
-  time_delta: Int,
+  time_delta: Long,
   margin: Int,
   width: Int,
   alive_color: (Byte, Byte, Byte),
@@ -35,7 +35,7 @@ object Config {
 
   val emptyConfig: Config = {
     Config(
-      BoardSource.UnSet, "", 500, 4, 16,
+      BoardSource.UnSet, "", 500L, 4, 16,
       (200.toByte, 220.toByte, 255.toByte),
       (100.toByte, 120.toByte, 150.toByte)
     )
@@ -64,7 +64,7 @@ object Config {
     val (flag, value) = kv
     flag match {
       case "b" => handleBuiltIn(value, config)
-      case "f" => Left("Not Implemented <f>")
+      case "f" => handleFile(value, config)
       case "t" => handleTimeDelta(value, config)
       case "m" => Left("Not Implemented <m>")
       case "w" => Left("Not Implemented <w>")
@@ -76,14 +76,11 @@ object Config {
 
   def handleTimeDelta(value: String, config: Config): IfConfig = {
     val left = Left("--t must be a positive integer number")
-    def onSuccess(num: Int): IfConfig = {
-      if (num < 1)
-        left
-      else
-        Right(config.copy(time_delta = num))
+    def onSuccess(num: Long): IfConfig = {
+      if (num < 1L) left else Right(config.copy(time_delta = num))
     }
 
-    Try(value.toInt) match {
+    Try(value.toLong) match {
       case Failure(_) => left
       case Success(num) => onSuccess(num)
     }
@@ -95,15 +92,49 @@ object Config {
     )
 
     def onSuccess(num: Int): IfConfig = {
-      if (num < 1 || num > board_count)
+      if (num < 1 || num > board_count) {
         left
-      else
-        Right(config.copy(board_source = BoardSource.BuiltIn))
+      } else {
+        val name = boards(num - 1)
+        val input_stream = getClass.getResourceAsStream(s"/$name.txt")
+        val board_str = scala.io.Source.fromInputStream(input_stream).mkString
+        Right(
+          config.copy(
+            board_source = BoardSource.BuiltIn,
+            board_str = board_str
+          )
+        )
+      }
     }
 
-    Try(value.toInt) match {
-      case Failure(_) => left
-      case Success(num) => onSuccess(num)
+    (config.board_source == BoardSource.File) match {
+      case true =>
+        Left("Cannot define both --b and --f as board source; pick one")
+      case false => {
+        Try(value.toInt) match {
+          case Failure(_) => left
+          case Success(num) => onSuccess(num)
+        }
+      }
+    }
+  }
+
+  def handleFile(value: String, config: Config): IfConfig = {
+    if (config.board_source == BoardSource.BuiltIn) {
+      Left("Cannot define both --b and --f as board source; pick one")
+    } else {
+      Try(scala.io.Source.fromFile(value).mkString) match {
+        case Failure(exception) =>
+          Left(exception.toString())
+        case Success(board_str) => {
+          Right(
+            config.copy(
+              board_source = BoardSource.File,
+              board_str = board_str
+            )
+          )
+        }
+      }
     }
   }
 }
