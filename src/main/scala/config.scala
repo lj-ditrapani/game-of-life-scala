@@ -39,12 +39,9 @@ object Config {
     } else if (!help_params.isEmpty) {
       Left(s"Unknown command line parameter '${help_params.head}'")
     } else {
-      val config = Config.emptyConfig
-      val either: IfConfig = Right(config)
-      params.foldLeft(either) { (either, kv) => either match {
-          case Left(_) => either
-          case Right(c) => addParams(kv, config)
-        }
+      val if_config: IfConfig = Right(Config.emptyConfig)
+      params.foldLeft(if_config) { (if_config, kv) =>
+        if_config.right.flatMap { addParams(kv, _) }
       }
     }
   }
