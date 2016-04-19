@@ -5,7 +5,7 @@ import org.scalatest.{FunSpec, Matchers}
 class ConfigSpec extends FunSpec with Matchers {
   describe("Config Class") {
     it("has instance values") {
-      val config = new Config(BoardSource.UnSet)
+      val config = Config.emptyConfig
       config.board_source should be (BoardSource.UnSet)
     }
   }
@@ -50,7 +50,7 @@ class ConfigSpec extends FunSpec with Matchers {
 
       it("returns Right if --b is specified with integer") {
         Config.load(List(), Map("b" -> "9")) should === (
-          Right(new Config(BoardSource.BuiltIn))
+          Right(Config(BoardSource.BuiltIn, "", 500))
         )
       }
 
@@ -70,6 +70,24 @@ class ConfigSpec extends FunSpec with Matchers {
             "Invalid value for --b; must be an integer between 1 and " +
             s"${Config.board_count}"
           )
+        )
+      }
+
+      it("returns Left if neither --b nor --f are set") {
+        Config.load(List(), Map()) should === (
+          Left("Must define either --b or --f as board source")
+        )
+      }
+
+      it("returns Left if both --b and --f are set") {
+        Config.load(List(), Map("b" -> "x", "f" -> "x")) should === (
+          Left("Cannot define both --b and --f as board source; pick one")
+        )
+      }
+
+      it("returns a Right if --b and --t are set") {
+        Config.load(List(), Map("b" -> "1", "t" -> "250")) should === (
+          Right(Config(BoardSource.BuiltIn, "", 500))
         )
       }
     }
