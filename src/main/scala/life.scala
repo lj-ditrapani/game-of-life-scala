@@ -1,14 +1,13 @@
 package info.ditrapani.gameoflife
 
 import scalafx.application.JFXApp
-import scalafx.scene.canvas.Canvas
+import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
 import scala.util.{Try, Success, Failure}
 
-object LifeFX extends JFXApp {
-
+object Life extends JFXApp {
   Config.load(parameters.unnamed, Map(parameters.named.toSeq: _*)) match {
     case Left(s) => printErrorHelpAndExit(s)
     case Right(config) => loadAndRun(config)
@@ -38,12 +37,23 @@ object LifeFX extends JFXApp {
   def startGfx(grid: Grid, config: Config): Unit = {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
-    val f: (Int, Int, Int) => Color = Color.rgb _
-    def tupleRgb = Function.tupled(f)
-    val alive_color = tupleRgb(config.alive_color)
-    val dead_color = tupleRgb(config.dead_color)
-    val margin = config.margin
-    val width = config.width
+    val gc = makeGfxContext(grid, config.width, config.margin)
+    val drawScene = makeSceneDrawer(config, gc)
+
+    drawScene(curr_grid)
+
+    var last_time = System.nanoTime()
+
+    AnimationTimer(curr_time => {
+      if (curr_time - last_time > time_delta) {
+        last_time = curr_time
+        curr_grid = curr_grid.next
+        drawScene(curr_grid)
+      }
+    }).start()
+  }
+
+  def makeGfxContext(grid: Grid, width: Int, margin: Int): GraphicsContext = {
     val canvas_height = (width + margin) * grid.height + margin
     val canvas_width = (width + margin) * grid.width + margin
     val canvas = new Canvas(canvas_width, canvas_height)
@@ -61,10 +71,21 @@ object LifeFX extends JFXApp {
       }
     }
 
-    def drawScene(): Unit = {
+    gc
+  }
+
+  def makeSceneDrawer(config: Config, gc: GraphicsContext): Grid => Unit = {
+    val f: (Int, Int, Int) => Color = Color.rgb _
+    def tupleRgb = Function.tupled(f)
+    val alive_color = tupleRgb(config.alive_color)
+    val dead_color = tupleRgb(config.dead_color)
+    val margin = config.margin
+    val width = config.width
+
+    (grid) => {
       var x = width * -1
       var y = width * -1
-      for (row <- curr_grid.cells) {
+      for (row <- grid.cells) {
         x = width * -1
         y += (width + margin)
         for (cell <- row) {
@@ -75,17 +96,5 @@ object LifeFX extends JFXApp {
         }
       }
     }
-
-    drawScene()
-
-    var last_time = System.nanoTime()
-
-    AnimationTimer(curr_time => {
-      if (curr_time - last_time > time_delta) {
-        last_time = curr_time
-        curr_grid = curr_grid.next
-        drawScene()
-      }
-    }).start()
   }
 }
