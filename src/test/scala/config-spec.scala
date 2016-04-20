@@ -11,6 +11,8 @@ class ConfigSpec extends FunSpec with Matchers {
   }
 
   describe("Config Object") {
+    val i = (Config.boards.indexOf("blinker") + 1).toString
+
     describe("load") {
       it("returns Left if --help is found") {
         Config.load(List("--help"), Map()) should === (
@@ -25,7 +27,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Left if unknown parameters found in params") {
-        Config.load(List(), Map("b" -> "3", "a" -> "")) should === (
+        Config.load(List(), Map("b" -> i, "a" -> "")) should === (
           Left("Unknown command line parameter '--a'")
         )
       }
@@ -49,7 +51,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Right if --b is specified with integer") {
-        Config.load(List(), Map("b" -> "3")) should === (
+        Config.load(List(), Map("b" -> i)) should === (
           Right(
             Config.emptyConfig.copy(
               board_source = BoardSource.BuiltIn,
@@ -68,9 +70,12 @@ class ConfigSpec extends FunSpec with Matchers {
         )
       }
 
-      it("returns Left if --b is specified with integer > 9") {
-        val i = (Config.board_count + 1).toString
-        Config.load(List(), Map("b" -> i)) should === (
+      it(
+        "returns Left if --b is specified with integer > " +
+        s"${Config.board_count}"
+      ) {
+        val end_plus_one = (Config.board_count + 1).toString
+        Config.load(List(), Map("b" -> end_plus_one)) should === (
           Left(
             "Invalid value for --b; must be an integer between 1 and " +
             s"${Config.board_count}"
@@ -92,13 +97,13 @@ class ConfigSpec extends FunSpec with Matchers {
 
       it("returns Left if both --f and --b are set") {
         val f = "src/main/resources/blinker.txt"
-        Config.load(List(), Map("f" -> f, "b" -> "3")) should === (
+        Config.load(List(), Map("f" -> f, "b" -> i)) should === (
           Left("Cannot define both --b and --f as board source; pick one")
         )
       }
 
       it("returns a Right if --b and --t are set") {
-        Config.load(List(), Map("b" -> "3", "t" -> "250")) should === (
+        Config.load(List(), Map("b" -> i, "t" -> "250")) should === (
           Right(
             Config.emptyConfig.copy(
               board_source = BoardSource.BuiltIn,
@@ -147,7 +152,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns a Right if --m and --w are set") {
-        val params = Map("b" -> "3", "m" -> "0", "w" -> "1")
+        val params = Map("b" -> i, "m" -> "0", "w" -> "1")
         Config.load(List(), params) should === (
           Right(
             Config.emptyConfig.copy(
@@ -161,31 +166,31 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns a Left if --m is negative") {
-        Config.load(List(), Map("b" -> "3", "m" -> "-1")) should === (
+        Config.load(List(), Map("b" -> i, "m" -> "-1")) should === (
           Left("--m must be a non-negative integer number")
         )
       }
 
       it("returns a Left if --m is not an integer") {
-        Config.load(List(), Map("b" -> "3", "m" -> "foo")) should === (
+        Config.load(List(), Map("b" -> i, "m" -> "foo")) should === (
           Left("--m must be a non-negative integer number")
         )
       }
 
       it("returns a Left if --w is not positive") {
-        Config.load(List(), Map("b" -> "3", "w" -> "0")) should === (
+        Config.load(List(), Map("b" -> i, "w" -> "0")) should === (
           Left("--w must be a positive integer number")
         )
       }
 
       it("returns a Left if --w is negative") {
-        Config.load(List(), Map("b" -> "3", "w" -> "-1")) should === (
+        Config.load(List(), Map("b" -> i, "w" -> "-1")) should === (
           Left("--w must be a positive integer number")
         )
       }
 
       it("returns a Left if --w is not an integer") {
-        Config.load(List(), Map("b" -> "3", "w" -> "foo")) should === (
+        Config.load(List(), Map("b" -> i, "w" -> "foo")) should === (
           Left("--w must be a positive integer number")
         )
       }
