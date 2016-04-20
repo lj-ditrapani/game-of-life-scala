@@ -42,14 +42,16 @@ Style check; I'm using both wartremover and scalastyle.  The compile task also r
 TODO
 ----
 
-In config specs; make a `val blinker_board_num = "3"`
-or `val blinker_board_num = boards.get_index("blinker").toString`
-to easily change in case list order changes when adding new boards
-
 Refactor Life:
 - Maybe make parameterized a setup stage method that does the one-time setup
 - Maybe make drawScene a separate parameterized method, to shorten the startGfx method
 - bump version to 1.1.0
+
+Make some games boards larger now that you can control margin & width
+
+Add more boards (glider gun)
+
+Add --alive-color & --dead-color?
 
 Refactor Config implementation
 
