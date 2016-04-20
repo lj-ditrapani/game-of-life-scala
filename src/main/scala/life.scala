@@ -38,8 +38,10 @@ object LifeFX extends JFXApp {
   def startGfx(grid: Grid, config: Config): Unit = {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
-    val alive_color = Color.rgb(200, 220, 255)
-    val dead_color = Color.rgb(100, 120, 155)
+    val f: (Int, Int, Int) => Color = Color.rgb _
+    def tupleRgb = Function.tupled(f)
+    val alive_color = tupleRgb(config.alive_color)
+    val dead_color = tupleRgb(config.dead_color)
     val margin = config.margin
     val width = config.width
     val canvas_height = (width + margin) * grid.height + margin

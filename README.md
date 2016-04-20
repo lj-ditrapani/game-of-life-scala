@@ -4,7 +4,7 @@ Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 Download Standalone jar
 -----------------------
 
-<http://ditrapani.info/resources/game-of-life-assembly-1.0.0.jar>
+<http://ditrapani.info/resources/game-of-life-assembly-1.1.0.jar>
 
 
 Usage
@@ -42,40 +42,15 @@ Style check; I'm using both wartremover and scalastyle.  The compile task also r
 TODO
 ----
 
-colors may need to be (Int, Int, Int) instead of (Byte, Byte, Byte)?
-
-In config specs; make a
-
-        val blinker_board_num = "3"
-
-or
-
-        val blinker_board_num = boards.get_index("blinker").toString
-
+In config specs; make a `val blinker_board_num = "3"`
+or `val blinker_board_num = boards.get_index("blinker").toString`
 to easily change in case list order changes when adding new boards
 
+Refactor Life:
+- Maybe make parameterized a setup stage method that does the one-time setup
+- Maybe make drawScene a separate parameterized method, to shorten the startGfx method
+- bump version to 1.1.0
 
-Maybe make parameterized a setup stage method that does the one-time setup
-Maybe make drawScene a separate parameterized method, to shorten the startGfx method
+Refactor Config implementation
 
-Use a config file.
-Check for config file in local dir & home dir & ~/.config/
-- .ljd-game-of-life
-- --config=<file> to give explicit path
-- Check for config first, then use config file to augment parameters.named Map
-- Config file format (built-in and file cannot both be defined simultaneously)
-
-    built-in: 5
-    file: path
-    time: 500
-    margin: 0
-    width: 2
-    alive-color: 255 255 255
-    dead-color: 0 0 0
-
-Configure cell boarder and cell width via command line arguments.
-- margin --m
-- width  --w
-Cofigure colors
-- --alive-color=(r,g,b) 0-255
-- --dead-color=(r,g,b) 0-255
+Refactor Config specs

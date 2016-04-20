@@ -1,8 +1,10 @@
 Usage:
-java -jar game-of-life-assembly-0.1.0.jar --b=<n>    |
+java -jar game-of-life-assembly-1.1.0.jar --b=<n>    |
                                           --f=<file> |
                                           --help
                                           [--t=<n>]
+                                          [--m=<n>]
+                                          [--w=<n>]
 
 --b=<n>    Run a built-in board where n is a number that maps to the
            corresponding game board as defined in the table below.
@@ -17,6 +19,12 @@ java -jar game-of-life-assembly-0.1.0.jar --b=<n>    |
 --t=<n>    Optional argument.  The time delta between simulation steps
            in milliseconds.  Smaller n means faster simulation.
            Defaults to 500 ms.
+
+--m=<n>    Define the width of the margins between cells in pixels.
+           Defaults to 4 pixels.
+
+--w=<n>    Defines the widths of the cells in pixels.
+           Defaults to 16 pixels.
 
 
 Example game board:

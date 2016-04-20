@@ -13,8 +13,8 @@ case class Config(
   time_delta: Long,
   margin: Int,
   width: Int,
-  alive_color: (Byte, Byte, Byte),
-  dead_color: (Byte, Byte, Byte)
+  alive_color: (Int, Int, Int),
+  dead_color: (Int, Int, Int)
 )
 
 object Config {
@@ -36,8 +36,8 @@ object Config {
   val emptyConfig: Config = {
     Config(
       BoardSource.UnSet, "", 500L, 4, 16,
-      (200.toByte, 220.toByte, 255.toByte),
-      (100.toByte, 120.toByte, 150.toByte)
+      (200, 220, 255),
+      (100, 120, 150)
     )
   }
 
@@ -66,10 +66,10 @@ object Config {
       case "b" => handleBuiltIn(value, config)
       case "f" => handleFile(value, config)
       case "t" => handleTimeDelta(value, config)
-      case "m" => Left("Not Implemented <m>")
-      case "w" => Left("Not Implemented <w>")
-      case "alive-color" => Left("Not Implemented <ac>")
-      case "dead-color" => Left("Not Implemented <dc>")
+      case "m" => handleMargin(value, config)
+      case "w" => handleWidth(value, config)
+      case "alive-color" => Left("--alive-color not yet implemented")
+      case "dead-color" => Left("--dead-color not yet implemented")
       case _ => Left(s"Unknown command line parameter '--${flag}'")
     }
   }
@@ -135,6 +135,30 @@ object Config {
           )
         }
       }
+    }
+  }
+
+  def handleMargin(value: String, config: Config): IfConfig = {
+    val left = Left("--m must be a non-negative integer number")
+    def onSuccess(num: Int): IfConfig = {
+      if (num < 0) left else Right(config.copy(margin = num))
+    }
+
+    Try(value.toInt) match {
+      case Failure(_) => left
+      case Success(num) => onSuccess(num)
+    }
+  }
+
+  def handleWidth(value: String, config: Config): IfConfig = {
+    val left = Left("--w must be a positive integer number")
+    def onSuccess(num: Int): IfConfig = {
+      if (num < 1) left else Right(config.copy(width = num))
+    }
+
+    Try(value.toInt) match {
+      case Failure(_) => left
+      case Success(num) => onSuccess(num)
     }
   }
 }

@@ -145,6 +145,50 @@ class ConfigSpec extends FunSpec with Matchers {
           Left("--t must be a positive integer number")
         )
       }
+
+      it("returns a Right if --m and --w are set") {
+        val params = Map("b" -> "3", "m" -> "0", "w" -> "1")
+        Config.load(List(), params) should === (
+          Right(
+            Config.emptyConfig.copy(
+              board_source = BoardSource.BuiltIn,
+              board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
+              margin = 0,
+              width = 1
+            )
+          )
+        )
+      }
+
+      it("returns a Left if --m is negative") {
+        Config.load(List(), Map("b" -> "3", "m" -> "-1")) should === (
+          Left("--m must be a non-negative integer number")
+        )
+      }
+
+      it("returns a Left if --m is not an integer") {
+        Config.load(List(), Map("b" -> "3", "m" -> "foo")) should === (
+          Left("--m must be a non-negative integer number")
+        )
+      }
+
+      it("returns a Left if --w is not positive") {
+        Config.load(List(), Map("b" -> "3", "w" -> "0")) should === (
+          Left("--w must be a positive integer number")
+        )
+      }
+
+      it("returns a Left if --w is negative") {
+        Config.load(List(), Map("b" -> "3", "w" -> "-1")) should === (
+          Left("--w must be a positive integer number")
+        )
+      }
+
+      it("returns a Left if --w is not an integer") {
+        Config.load(List(), Map("b" -> "3", "w" -> "foo")) should === (
+          Left("--w must be a positive integer number")
+        )
+      }
     }
   }
 }
