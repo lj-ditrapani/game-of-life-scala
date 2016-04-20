@@ -8,89 +8,40 @@ import scalafx.animation.AnimationTimer
 import scala.util.{Try, Success, Failure}
 
 object LifeFX extends JFXApp {
-  val boards = Vector(
-    "acorn",
-    "blinkers",
-    "blinker",
-    "block-laying-switch-engine2",
-    "diehard",
-    "glider",
-    "gosper-glider-gun",
-    "pentadecathlon",
-    "r-pentomino"
-  )
 
-  val params = parameters.named
-
-  if (
-    Vector[Boolean](
-      parameters.unnamed.exists(p => p == "--help"),
-      !parameters.unnamed.isEmpty,
-      params.isEmpty,
-      params.size > 2,
-      params.size == 2 && !params.contains("t"),
-      !params.contains("b") && !params.contains("f")
-    ).exists(x => x)
-  ) {
-    printHelpAndExit()
+  Config.load(parameters.unnamed, Map(parameters.named.toSeq: _*)) match {
+    case Left(s) => printErrorHelpAndExit(s)
+    case Right(config) => loadAndRun(config)
   }
 
-  val time_delta: Long = Try(params.getOrElse("t", "500").toLong)
-    .getOrElse(500L) * 1000000L
-  val (flag, value) = params.filterKeys(_ != "t").head
-  flag match {
-    case "b" | "built-in" => loadBuiltIn(value)
-    case "f" | "file" => loadExternalFile(value)
-    case _ => printHelpAndExit()
-  }
-
-  def printHelpAndExit(): Unit = {
+  def printErrorHelpAndExit(message: String): Unit = {
+    if (message != "Printing help text...") {
+      println(s"\n[ERROR] $message\n")
+    }
     val input_stream = getClass.getResourceAsStream("/help.txt")
     val help_text = scala.io.Source.fromInputStream(input_stream).mkString
     println(help_text)
-    for ((name, index) <- boards.zipWithIndex) {
+    for ((name, index) <- Config.boards.zipWithIndex) {
       println(s"    ${index + 1}  $name")
     }
     println("\n")
     System.exit(0)
   }
 
-  def loadBuiltIn(num_str: String): Unit = {
-    val n = try {
-      loadBuiltIn(num_str.toInt)
-    } catch {
-      case e: NumberFormatException => printHelpAndExit()
+  def loadAndRun(config: Config): Unit = {
+    Grid.build(config.board_str) match {
+      case Left(s) => printErrorHelpAndExit(s)
+      case Right(grid) => startGfx(grid, config)
     }
   }
 
-  def loadBuiltIn(n: Int): Unit = {
-    if (n < 1 || n > boards.size) {
-      printHelpAndExit()
-    }
-    val name = boards(n - 1)
-    val input_stream = getClass.getResourceAsStream(s"/$name.txt")
-    val board_str = scala.io.Source.fromInputStream(input_stream).mkString
-    Grid.build(board_str).right.map(startGfx(_))
-  }
-
-  def loadExternalFile(file_name: String): Unit = {
-    def printErrorHelpAndExit(message: String): Unit = {
-      println(s"\n[ERROR] $message\n")
-      printHelpAndExit()
-    }
-    Try(scala.io.Source.fromFile(file_name).mkString) match {
-      case Failure(exception) =>
-        printErrorHelpAndExit(exception.toString())
-      case Success(board_str) => {
-        val board_str = scala.io.Source.fromFile(file_name).mkString
-        Grid.build(board_str).fold(printErrorHelpAndExit(_), startGfx(_))
-      }
-    }
-  }
-
-  def startGfx(grid: Grid): Unit = {
-    val margin = 4
-    val width = 16
+  def startGfx(grid: Grid, config: Config): Unit = {
+    var curr_grid = grid
+    val time_delta: Long = config.time_delta * 1000000L
+    val alive_color = Color.rgb(200, 220, 255)
+    val dead_color = Color.rgb(100, 120, 155)
+    val margin = config.margin
+    val width = config.width
     val canvas_height = (width + margin) * grid.height + margin
     val canvas_width = (width + margin) * grid.width + margin
     val canvas = new Canvas(canvas_width, canvas_height)
@@ -101,18 +52,12 @@ object LifeFX extends JFXApp {
     gc.setFill(Color.rgb(20, 20, 20))
     gc.fillRect(0, 0, canvas_width, canvas_height)
 
-    val alive_color = Color.rgb(200, 220, 255)
-    val dead_color = Color.rgb(100, 120, 155)
-
     stage = new JFXApp.PrimaryStage {
       title = "Game of Life by L. J. Di Trapani"
       scene = new Scene(canvas_width, canvas_height) {
         content = canvas
       }
     }
-
-    var last_time = System.nanoTime()
-    var curr_grid = grid
 
     def drawScene(): Unit = {
       var x = width * -1
@@ -130,6 +75,8 @@ object LifeFX extends JFXApp {
     }
 
     drawScene()
+
+    var last_time = System.nanoTime()
 
     AnimationTimer(curr_time => {
       if (curr_time - last_time > time_delta) {
