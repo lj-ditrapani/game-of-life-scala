@@ -21,6 +21,24 @@ For more details and list of built-in game boards:
 See src/main/resources/help.txt for documentation.
 
 
+Dependencies
+------------
+
+Requires Java 8 and javaFX.
+Java 8 distributions from Oracle include the javaFX runtime.
+
+If using openjdk-8-jdk on linux, you may need to additionally install
+the openjfx package to get the javaFX runtime.  For example,
+
+Ubuntu/Debian
+
+    sudo apt-get install openjfx
+
+Arch
+
+    sudo pacman -S java-openjfx
+
+
 Dev
 ---
 
@@ -29,9 +47,6 @@ Generate a standalone jar for java 8
     sbt assembly
 
 The jar will be placed in target/scala-x.xx/game-of-life-assembly-x.x.x.jar
-
-Note:  If using openjdk-8-jdk on Ubuntu/Debian, you need to additionally
-install the openjfx package to get the javaFX runtime.
 
 Style check; I'm using both wartremover and scalastyle.  The compile task also runs wartremover.
 
