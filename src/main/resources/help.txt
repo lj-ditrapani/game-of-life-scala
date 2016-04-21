@@ -5,6 +5,9 @@ java -jar game-of-life-assembly-1.1.0.jar --b=<n>    |
                                           [--t=<n>]
                                           [--m=<n>]
                                           [--w=<n>]
+                                          [--alive-color=<n,n,n>]
+                                          [--dead-color=<n,n,n>]
+                                          [--bg-color=<n,n,n>]
 
 --b=<n>    Run a built-in board where n is a number that maps to the
            corresponding game board as defined in the table below.
@@ -16,15 +19,28 @@ java -jar game-of-life-assembly-1.1.0.jar --b=<n>    |
 
 --help     Print this help text and exit
 
---t=<n>    Optional argument.  The time delta between simulation steps
+--t=<n>    Optional.  The time delta between simulation steps
            in milliseconds.  Smaller n means faster simulation.
            Defaults to 500 ms.
 
---m=<n>    Define the width of the margins between cells in pixels.
-           Defaults to 4 pixels.
+--m=<n>    Optional.  Define the width of the margins between cells in
+           pixels.  Defaults to 4 pixels.
 
---w=<n>    Defines the widths of the cells in pixels.
+--w=<n>    Optional.  Defines the widths of the cells in pixels.
            Defaults to 16 pixels.
+
+--alive-color=<n,n,n>   Optional.  Set the alive cells' color.
+                        Defaults to 200,220,255.
+
+--dead-color=<n,n,n>    Optional.  Set the dead cells' color.
+                        Defaults to 90,100,130
+
+--bg-color=<n,n,n>      Optional.  Set the background/margin color.
+                        Defaults to 150,170,200
+
+
+The --*-color parameters are red, green, blue triples of comma separated
+integers between 0-255 inclusive.
 
 
 Example game board:
