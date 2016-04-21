@@ -1,6 +1,7 @@
 package info.ditrapani.gameoflife
 
 import scala.util.{Try, Success, Failure}
+import scala.util.matching.Regex.Match
 
 object BoardSource extends Enumeration {
   type Source = Value
@@ -14,7 +15,8 @@ case class Config(
   margin: Int,
   width: Int,
   alive_color: (Int, Int, Int),
-  dead_color: (Int, Int, Int)
+  dead_color: (Int, Int, Int),
+  bg_color: (Int, Int, Int)
 )
 
 object Config {
@@ -37,7 +39,8 @@ object Config {
     Config(
       BoardSource.UnSet, "", 500L, 4, 16,
       (200, 220, 255),
-      (100, 120, 150)
+      (90, 100, 130),
+      (150, 170, 200)
     )
   }
 
@@ -68,8 +71,9 @@ object Config {
       case "t" => handleTimeDelta(value, config)
       case "m" => handleMargin(value, config)
       case "w" => handleWidth(value, config)
-      case "alive-color" => Left("--alive-color not yet implemented")
-      case "dead-color" => Left("--dead-color not yet implemented")
+      case "alive-color" => handleAliveColor(value, config)
+      case "dead-color" => handleDeadColor(value, config)
+      case "bg-color" => handleBgColor(value, config)
       case _ => Left(s"Unknown command line parameter '--${flag}'")
     }
   }
@@ -159,6 +163,64 @@ object Config {
     Try(value.toInt) match {
       case Failure(_) => left
       case Success(num) => onSuccess(num)
+    }
+  }
+
+  def handleAliveColor(value: String, config: Config): IfConfig = {
+    handleColor(value, "alive") match {
+      case Right((r, g, b)) => Right(config.copy(alive_color = (r, g, b)))
+      case Left(s) => Left(s)
+    }
+  }
+
+  def handleDeadColor(value: String, config: Config): IfConfig = {
+    handleColor(value, "dead") match {
+      case Right((r, g, b)) => Right(config.copy(dead_color = (r, g, b)))
+      case Left(s) => Left(s)
+    }
+  }
+
+  def handleBgColor(value: String, config: Config): IfConfig = {
+    handleColor(value, "bg") match {
+      case Right((r, g, b)) => Right(config.copy(bg_color = (r, g, b)))
+      case Left(s) => Left(s)
+    }
+  }
+
+  def handleColor(value: String, color_type: String): Either[String, (Int, Int, Int)] = {
+    val left = Left(s"--$color_type-color must be (Int,Int,Int) between 0-255")
+    def processMatch(m: Match): Either[String, (Int, Int, Int)] = {
+      val r = m.group(1)
+      val g = m.group(2)
+      val b = m.group(3)
+      val either_r = parseInt(r, 0, 255)
+      val either_g = parseInt(g, 0, 255)
+      val either_b = parseInt(b, 0, 255)
+      (either_r.isRight && either_g.isRight && either_b.isRight) match {
+        case true => Right((r.toInt, g.toInt, b.toInt))
+        case false => left
+      }
+    }
+
+    val pattern = "\\((\\d{1,3}),(\\d{1,3}),(\\d{1,3})\\)".r
+    pattern.findFirstMatchIn(value) match {
+      case Some(m) => processMatch(m)
+      case None => left
+    }
+  }
+
+  def parseInt(value: String, lower: Int, upper: Int, prefix: String = ""): Either[String, Int] = {
+    val left = Left(prefix + s", must be an integer between $lower and $upper")
+    def on_success(num: Int): Either[String, Int] = {
+      (num < lower || num > upper) match {
+        case true => left
+        case false => Right(num)
+      }
+    }
+
+    Try(value.toInt) match {
+      case Failure(_) => left
+      case Success(num) => on_success(num)
     }
   }
 }

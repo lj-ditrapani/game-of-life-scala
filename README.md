@@ -4,7 +4,7 @@ Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 Download Standalone jar
 -----------------------
 
-<http://ditrapani.info/resources/game-of-life-assembly-1.1.0.jar>
+<http://ditrapani.info/resources/game-of-life-assembly-1.2.0.jar>
 
 
 Usage
@@ -48,7 +48,8 @@ Generate a standalone jar for java 8
 
 The jar will be placed in target/scala-x.xx/game-of-life-assembly-x.x.x.jar
 
-Style check; I'm using both wartremover and scalastyle.  The compile task also runs wartremover.
+Style check; I'm using both wartremover and scalastyle.
+The compile task also runs wartremover.
 
     sbt test            # or anything that runs compile
     sbt scalastyle
@@ -57,12 +58,8 @@ Style check; I'm using both wartremover and scalastyle.  The compile task also r
 TODO
 ----
 
-Make some games boards larger now that you can control margin & width
-
-Add more boards
-
-Add --alive-color & --dead-color to Config?
-
-Refactor Config implementation
-
-Refactor Config specs
+- Specs for --alive-color & --dead-color & --bg-color
+- Refactor Config implementation
+- Refactor Config specs
+- Make some games boards larger now that you can control margin & width
+- Add more boards

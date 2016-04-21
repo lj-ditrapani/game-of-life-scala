@@ -37,7 +37,7 @@ object Life extends JFXApp {
   def startGfx(grid: Grid, config: Config): Unit = {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
-    val gc = makeGfxContext(grid, config.width, config.margin)
+    val gc = makeGfxContext(grid, config)
     val drawScene = makeSceneDrawer(config, gc)
 
     drawScene(curr_grid)
@@ -53,7 +53,9 @@ object Life extends JFXApp {
     }).start()
   }
 
-  def makeGfxContext(grid: Grid, width: Int, margin: Int): GraphicsContext = {
+  def makeGfxContext(grid: Grid, config: Config): GraphicsContext = {
+    val width = config.width
+    val margin = config.margin
     val canvas_height = (width + margin) * grid.height + margin
     val canvas_width = (width + margin) * grid.width + margin
     val canvas = new Canvas(canvas_width, canvas_height)
@@ -61,7 +63,8 @@ object Life extends JFXApp {
     canvas.translateX = 0
     canvas.translateY = 0
 
-    gc.setFill(Color.rgb(20, 20, 20))
+    val (r, g, b) = config.bg_color
+    gc.setFill(Color.rgb(r, g, b))
     gc.fillRect(0, 0, canvas_width, canvas_height)
 
     stage = new JFXApp.PrimaryStage {
