@@ -188,7 +188,7 @@ object Config {
   }
 
   def handleColor(value: String, color_type: String): Either[String, (Int, Int, Int)] = {
-    val left = Left(s"--$color_type-color must be (Int,Int,Int) between 0-255")
+    val left = Left(s"--$color_type-color must be Int,Int,Int between 0-255")
     def processMatch(m: Match): Either[String, (Int, Int, Int)] = {
       val r = m.group(1)
       val g = m.group(2)
@@ -202,7 +202,7 @@ object Config {
       }
     }
 
-    val pattern = "\\((\\d{1,3}),(\\d{1,3}),(\\d{1,3})\\)".r
+    val pattern = "^(\\d{1,3}),(\\d{1,3}),(\\d{1,3})$".r
     pattern.findFirstMatchIn(value) match {
       case Some(m) => processMatch(m)
       case None => left

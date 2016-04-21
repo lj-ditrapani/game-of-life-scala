@@ -207,14 +207,14 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--alive-color") {
         it("returns Left if bad format") {
-          val params = Map("b" -> i, "alive-color" -> "(0,100,300")
+          val params = Map("b" -> i, "alive-color" -> "0,100,300,")
           Config.load(List(), params) should === (
-            Left("--alive-color must be (Int,Int,Int) between 0-255")
+            Left("--alive-color must be Int,Int,Int between 0-255")
           )
         }
 
         it("returns Right if good format") {
-          val params = Map("b" -> i, "alive-color" -> "(0,100,255)")
+          val params = Map("b" -> i, "alive-color" -> "0,100,255")
           Config.load(List(), params) should === (
             Right(
               Config.emptyConfig.copy(
@@ -229,18 +229,22 @@ class ConfigSpec extends FunSpec with Matchers {
     }
 
     describe("handleColor") {
-      val left: Either[String, (Int, Int, Int)] = Left("--bg-color must be (Int,Int,Int) between 0-255")
+      val left: Either[String, (Int, Int, Int)] = Left("--bg-color must be Int,Int,Int between 0-255")
 
-      it("returns Right((Int, Int, Int)) for (1,10,100)") {
-        Config.handleColor("(1,10,100)", "bg") should === (Right((1, 10, 100)))
+      it("returns Right((Int, Int, Int)) for 1,10,100") {
+        Config.handleColor("1,10,100", "bg") should === (Right((1, 10, 100)))
         }
 
-      it("returns Left if tuple missing closing parens") {
-        Config.handleColor("(1,10,100", "bg") should === (left)
+      it("returns Left if tuple has leading garbage") {
+        Config.handleColor("hi1,10,100", "bg") should === (left)
+      }
+
+      it("returns Left if tuple has extra comma") {
+        Config.handleColor("1,10,100,", "bg") should === (left)
       }
 
       it("returns Left if missing comma") {
-        Config.handleColor("(1,10 100", "bg") should === (left)
+        Config.handleColor("1,10 100", "bg") should === (left)
       }
 
       it("returns Left if not tuple") {
@@ -248,23 +252,23 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Left if there is a non-number") {
-        Config.handleColor("(1,2,foo)", "bg") should === (left)
+        Config.handleColor("1,2,foo", "bg") should === (left)
       }
 
       it("returns Left if not all ints") {
-        Config.handleColor("(1,2,1.5)", "bg") should === (left)
+        Config.handleColor("1,2,1.5", "bg") should === (left)
       }
 
       it("returns Left if less than 0") {
-        Config.handleColor("(1,2,-1)", "bg") should === (left)
+        Config.handleColor("1,2,-1", "bg") should === (left)
       }
 
       it("returns Left if greater than 255") {
-        Config.handleColor("(1,2,256)", "bg") should === (left)
+        Config.handleColor("1,2,256", "bg") should === (left)
       }
 
       it("returns Right even if leading zero") {
-        Config.handleColor("(1,2,06)", "bg") should === (Right(1,2,6))
+        Config.handleColor("1,2,06", "bg") should === (Right(1,2,6))
       }
     }
 
