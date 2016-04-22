@@ -38,7 +38,7 @@ class ConfigSpec extends FunSpec with Matchers {
         it("returns Left if --b is specified with empty string") {
           Config.load(List(), Map("b" -> "")) should === (
             Left(
-              "Invalid value for --b; must be an integer between 1 and " +
+              "Invalid value for --b, must be an integer between 1 and " +
               s"${Config.board_count}"
             )
           )
@@ -47,7 +47,7 @@ class ConfigSpec extends FunSpec with Matchers {
         it("returns Left if --b is specified without integer") {
           Config.load(List(), Map("b" -> "foo")) should === (
             Left(
-              "Invalid value for --b; must be an integer between 1 and " +
+              "Invalid value for --b, must be an integer between 1 and " +
               s"${Config.board_count}"
             )
           )
@@ -67,7 +67,7 @@ class ConfigSpec extends FunSpec with Matchers {
         it("returns Left if --b is specified with integer < 1") {
           Config.load(List(), Map("b" -> "0")) should === (
             Left(
-              "Invalid value for --b; must be an integer between 1 and " +
+              "Invalid value for --b, must be an integer between 1 and " +
               s"${Config.board_count}"
             )
           )
@@ -80,7 +80,7 @@ class ConfigSpec extends FunSpec with Matchers {
           val end_plus_one = (Config.board_count + 1).toString
           Config.load(List(), Map("b" -> end_plus_one)) should === (
             Left(
-              "Invalid value for --b; must be an integer between 1 and " +
+              "Invalid value for --b, must be an integer between 1 and " +
               s"${Config.board_count}"
             )
           )
@@ -144,19 +144,19 @@ class ConfigSpec extends FunSpec with Matchers {
       describe("--t") {
         it("returns a Left if --t is not a number") {
           Config.load(List(), Map("b" -> "1", "t" -> "foo")) should === (
-            Left("--t must be a positive integer number")
+            Left("--t must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --t is 0") {
           Config.load(List(), Map("b" -> "1", "t" -> "0")) should === (
-            Left("--t must be a positive integer number")
+            Left("--t must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --t is negative") {
           Config.load(List(), Map("b" -> "1", "t" -> "-1")) should === (
-            Left("--t must be a positive integer number")
+            Left("--t must be an integer between 1 and 4096")
           )
         }
       }
@@ -177,31 +177,31 @@ class ConfigSpec extends FunSpec with Matchers {
 
       it("returns a Left if --m is negative") {
         Config.load(List(), Map("b" -> i, "m" -> "-1")) should === (
-          Left("--m must be a non-negative integer number")
+          Left("--m must be an integer between 0 and 4096")
         )
       }
 
       it("returns a Left if --m is not an integer") {
         Config.load(List(), Map("b" -> i, "m" -> "foo")) should === (
-          Left("--m must be a non-negative integer number")
+          Left("--m must be an integer between 0 and 4096")
         )
       }
 
       it("returns a Left if --w is not positive") {
         Config.load(List(), Map("b" -> i, "w" -> "0")) should === (
-          Left("--w must be a positive integer number")
+          Left("--w must be an integer between 1 and 4096")
         )
       }
 
       it("returns a Left if --w is negative") {
         Config.load(List(), Map("b" -> i, "w" -> "-1")) should === (
-          Left("--w must be a positive integer number")
+          Left("--w must be an integer between 1 and 4096")
         )
       }
 
       it("returns a Left if --w is not an integer") {
         Config.load(List(), Map("b" -> i, "w" -> "foo")) should === (
-          Left("--w must be a positive integer number")
+          Left("--w must be an integer between 1 and 4096")
         )
       }
 
@@ -283,19 +283,19 @@ class ConfigSpec extends FunSpec with Matchers {
 
       it("returns Left if string is not int") {
         Config.parseInt("foo", 4, 6, "Prefix") should === (
-          Left("Prefix, must be an integer between 4 and 6")
+          Left("Prefix must be an integer between 4 and 6")
         )
       }
 
       it("returns Left if string int below bound") {
         Config.parseInt("9", 10, 20, "Prefix") should === (
-          Left("Prefix, must be an integer between 10 and 20")
+          Left("Prefix must be an integer between 10 and 20")
         )
       }
 
       it("returns Left if string int above bound") {
         Config.parseInt("21", 10, 20) should === (
-          Left(", must be an integer between 10 and 20")
+          Left(" must be an integer between 10 and 20")
         )
       }
     }

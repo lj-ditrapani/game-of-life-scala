@@ -21,6 +21,7 @@ case class Config(
 
 object Config {
   type IfConfig = Either[String, Config]
+  type IfInt = Either[String, Int]
 
   val boards = Vector(
     "acorn",
@@ -78,46 +79,26 @@ object Config {
     }
   }
 
-  def handleTimeDelta(value: String, config: Config): IfConfig = {
-    val left = Left("--t must be a positive integer number")
-    def onSuccess(num: Int): IfConfig = {
-      if (num < 1) left else Right(config.copy(time_delta = num))
-    }
-
-    Try(value.toInt) match {
-      case Failure(_) => left
-      case Success(num) => onSuccess(num)
-    }
-  }
-
   def handleBuiltIn(value: String, config: Config): IfConfig = {
-    val left = Left(
-      "Invalid value for --b; must be an integer between 1 and 9"
-    )
-
     def onSuccess(num: Int): IfConfig = {
-      if (num < 1 || num > board_count) {
-        left
-      } else {
-        val name = boards(num - 1)
-        val input_stream = getClass.getResourceAsStream(s"/$name.txt")
-        val board_str = scala.io.Source.fromInputStream(input_stream).mkString
-        Right(
-          config.copy(
-            board_source = BoardSource.BuiltIn,
-            board_str = board_str
-          )
+      val name = boards(num - 1)
+      val input_stream = getClass.getResourceAsStream(s"/$name.txt")
+      val board_str = scala.io.Source.fromInputStream(input_stream).mkString
+      Right(
+        config.copy(
+          board_source = BoardSource.BuiltIn,
+          board_str = board_str
         )
-      }
+      )
     }
 
     (config.board_source == BoardSource.File) match {
       case true =>
         Left("Cannot define both --b and --f as board source; pick one")
       case false => {
-        Try(value.toInt) match {
-          case Failure(_) => left
-          case Success(num) => onSuccess(num)
+        parseInt(value, 1, board_count, "Invalid value for --b,") match {
+          case Left(s) => Left(s)
+          case Right(num) => onSuccess(num)
         }
       }
     }
@@ -142,27 +123,24 @@ object Config {
     }
   }
 
-  def handleMargin(value: String, config: Config): IfConfig = {
-    val left = Left("--m must be a non-negative integer number")
-    def onSuccess(num: Int): IfConfig = {
-      if (num < 0) left else Right(config.copy(margin = num))
+  def handleTimeDelta(value: String, config: Config): IfConfig = {
+    parseInt(value, 1, 4096, "--t") match {
+      case Left(s) => Left(s)
+      case Right(num) => Right(config.copy(time_delta = num))
     }
+  }
 
-    Try(value.toInt) match {
-      case Failure(_) => left
-      case Success(num) => onSuccess(num)
+  def handleMargin(value: String, config: Config): IfConfig = {
+    parseInt(value, 0, 4096, "--m") match {
+      case Left(s) => Left(s)
+      case Right(num) => Right(config.copy(margin = num))
     }
   }
 
   def handleWidth(value: String, config: Config): IfConfig = {
-    val left = Left("--w must be a positive integer number")
-    def onSuccess(num: Int): IfConfig = {
-      if (num < 1) left else Right(config.copy(width = num))
-    }
-
-    Try(value.toInt) match {
-      case Failure(_) => left
-      case Success(num) => onSuccess(num)
+    parseInt(value, 1, 4096, "--w") match {
+      case Left(s) => Left(s)
+      case Right(num) => Right(config.copy(width = num))
     }
   }
 
@@ -209,9 +187,9 @@ object Config {
     }
   }
 
-  def parseInt(value: String, lower: Int, upper: Int, prefix: String = ""): Either[String, Int] = {
-    val left = Left(prefix + s", must be an integer between $lower and $upper")
-    def onSuccess(num: Int): Either[String, Int] = {
+  def parseInt(value: String, lower: Int, upper: Int, prefix: String = ""): IfInt = {
+    val left = Left(prefix + s" must be an integer between $lower and $upper")
+    def onSuccess(num: Int): IfInt = {
       (num < lower || num > upper) match {
         case true => left
         case false => Right(num)
