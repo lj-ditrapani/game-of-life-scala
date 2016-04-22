@@ -66,7 +66,7 @@ class GridSpec extends FunSpec with Matchers {
         Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
       }
 
-      it("computes next board for a boat still life") {
+      it("computes next board for a toad pulsar") {
         val str1 = """------
                      |------
                      |--+++-
@@ -85,7 +85,7 @@ class GridSpec extends FunSpec with Matchers {
         Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
       }
 
-      it("computes next board for a toad pulsar") {
+      it("computes next board for a boat still life") {
         val str1 = """-----
                      |-++--
                      |-+-+-
