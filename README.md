@@ -12,7 +12,7 @@ Usage
 
 Example
 
-    java -jar game-of-life-assembly-x.x.x.jar --b=1
+    java -jar game-of-life-assembly-x.x.x.jar --b=2
 
 For more details and list of built-in game boards:
 

@@ -1,13 +1,8 @@
 Usage:
-java -jar game-of-life-assembly-1.1.0.jar --b=<n>    |
-                                          --f=<file> |
-                                          --help
-                                          [--t=<n>]
-                                          [--m=<n>]
-                                          [--w=<n>]
-                                          [--alive-color=<n,n,n>]
-                                          [--dead-color=<n,n,n>]
-                                          [--bg-color=<n,n,n>]
+java -jar game-of-life-assembly-1.1.0.jar REQUIRED [OPTIONS]
+
+
+REQUIRED (one and only one of the following 3 must be defined)
 
 --b=<n>    Run a built-in board where n is a number that maps to the
            corresponding game board as defined in the table below.
@@ -19,28 +14,35 @@ java -jar game-of-life-assembly-1.1.0.jar --b=<n>    |
 
 --help     Print this help text and exit
 
---t=<n>    Optional.  The time delta between simulation steps
+
+OPTIONS (any of the following 6 may optionally be defined)
+
+--t=<n>    The time delta between simulation steps
            in milliseconds.  Smaller n means faster simulation.
            Defaults to 500 ms.
 
---m=<n>    Optional.  Define the width of the margins between cells in
+--m=<n>    Define the width of the margins between cells in
            pixels.  Defaults to 4 pixels.
 
---w=<n>    Optional.  Defines the widths of the cells in pixels.
+--w=<n>    Defines the widths of the cells in pixels.
            Defaults to 16 pixels.
 
---alive-color=<n,n,n>   Optional.  Set the alive cells' color.
+--alive-color=<n,n,n>   Set the alive cells' color.
                         Defaults to 200,220,255.
 
---dead-color=<n,n,n>    Optional.  Set the dead cells' color.
+--dead-color=<n,n,n>    Set the dead cells' color.
                         Defaults to 90,100,130
 
---bg-color=<n,n,n>      Optional.  Set the background/margin color.
+--bg-color=<n,n,n>      Set the background/margin color.
                         Defaults to 150,170,200
-
 
 The --*-color parameters are red, green, blue triples of comma separated
 integers between 0-255 inclusive.
+
+
+Example Usage:
+java -jar game-of-life-assembly-1.1.0.jar --b=7 --alive-color=255,0,0
+java -jar game-of-life-assembly-1.1.0.jar --f=foo.txt --t=100 --w=4
 
 
 Example game board:
