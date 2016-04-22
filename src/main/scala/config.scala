@@ -11,7 +11,7 @@ object BoardSource extends Enumeration {
 case class Config(
   board_source: BoardSource.Source,
   board_str: String,
-  time_delta: Long,
+  time_delta: Int,
   margin: Int,
   width: Int,
   alive_color: (Int, Int, Int),
@@ -37,7 +37,7 @@ object Config {
 
   val emptyConfig: Config = {
     Config(
-      BoardSource.UnSet, "", 500L, 4, 16,
+      BoardSource.UnSet, "", 500, 4, 16,
       (200, 220, 255),
       (90, 100, 130),
       (150, 170, 200)
@@ -80,11 +80,11 @@ object Config {
 
   def handleTimeDelta(value: String, config: Config): IfConfig = {
     val left = Left("--t must be a positive integer number")
-    def onSuccess(num: Long): IfConfig = {
-      if (num < 1L) left else Right(config.copy(time_delta = num))
+    def onSuccess(num: Int): IfConfig = {
+      if (num < 1) left else Right(config.copy(time_delta = num))
     }
 
-    Try(value.toLong) match {
+    Try(value.toInt) match {
       case Failure(_) => left
       case Success(num) => onSuccess(num)
     }
@@ -211,7 +211,7 @@ object Config {
 
   def parseInt(value: String, lower: Int, upper: Int, prefix: String = ""): Either[String, Int] = {
     val left = Left(prefix + s", must be an integer between $lower and $upper")
-    def on_success(num: Int): Either[String, Int] = {
+    def onSuccess(num: Int): Either[String, Int] = {
       (num < lower || num > upper) match {
         case true => left
         case false => Right(num)
@@ -220,7 +220,7 @@ object Config {
 
     Try(value.toInt) match {
       case Failure(_) => left
-      case Success(num) => on_success(num)
+      case Success(num) => onSuccess(num)
     }
   }
 }
