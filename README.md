@@ -18,7 +18,9 @@ For more details and list of built-in game boards:
 
     java -jar game-of-life-assembly-x.x.x.jar --help
 
-See src/main/resources/help.txt for documentation.
+See
+[src/main/resources/help.txt](https://github.com/lj-ditrapani/game-of-life-scala/blob/master/src/main/resources/help.txt)
+for documentation.
 
 
 Dependencies

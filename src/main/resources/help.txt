@@ -1,8 +1,11 @@
-Usage:
+Usage
+-----
+
 java -jar game-of-life-assembly-1.1.0.jar REQUIRED [OPTIONS]
 
 
-REQUIRED (one and only one of the following 3 must be defined)
+REQUIRED (one, and only one, of the following 3 must be defined)
+----------------------------------------------------------------
 
 --b=<n>    Run a built-in board where n is a number that maps to the
            corresponding game board as defined in the table below.
@@ -16,6 +19,7 @@ REQUIRED (one and only one of the following 3 must be defined)
 
 
 OPTIONS (any of the following 6 may optionally be defined)
+----------------------------------------------------------
 
 --t=<n>    The time delta between simulation steps
            in milliseconds.  Smaller n means faster simulation.
@@ -36,16 +40,20 @@ OPTIONS (any of the following 6 may optionally be defined)
 --bg-color=<n,n,n>      Set the background/margin color.
                         Defaults to 150,170,200
 
-The --*-color parameters are red, green, blue triples of comma separated
-integers between 0-255 inclusive.
+The --*-color parameters are red, green, blue triples of comma
+separated integers between 0-255 inclusive.
 
 
-Example Usage:
+Example Usage
+-------------
+
 java -jar game-of-life-assembly-1.1.0.jar --b=7 --alive-color=255,0,0
 java -jar game-of-life-assembly-1.1.0.jar --f=foo.txt --t=100 --w=4
 
 
-Example game board:
+Example game board
+------------------
+
 ------
 ---+--
 ---+--
