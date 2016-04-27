@@ -175,34 +175,38 @@ class ConfigSpec extends FunSpec with Matchers {
         )
       }
 
-      it("returns a Left if --m is negative") {
-        Config.load(List(), Map("b" -> i, "m" -> "-1")) should === (
-          Left("--m must be an integer between 0 and 4096")
-        )
+      describe("--m") {
+        it("returns a Left if --m is negative") {
+          Config.load(List(), Map("b" -> i, "m" -> "-1")) should === (
+            Left("--m must be an integer between 0 and 4096")
+          )
+        }
+
+        it("returns a Left if --m is not an integer") {
+          Config.load(List(), Map("b" -> i, "m" -> "foo")) should === (
+            Left("--m must be an integer between 0 and 4096")
+          )
+        }
       }
 
-      it("returns a Left if --m is not an integer") {
-        Config.load(List(), Map("b" -> i, "m" -> "foo")) should === (
-          Left("--m must be an integer between 0 and 4096")
-        )
-      }
+      describe("--w") {
+        it("returns a Left if --w is not positive") {
+          Config.load(List(), Map("b" -> i, "w" -> "0")) should === (
+            Left("--w must be an integer between 1 and 4096")
+          )
+        }
 
-      it("returns a Left if --w is not positive") {
-        Config.load(List(), Map("b" -> i, "w" -> "0")) should === (
-          Left("--w must be an integer between 1 and 4096")
-        )
-      }
+        it("returns a Left if --w is negative") {
+          Config.load(List(), Map("b" -> i, "w" -> "-1")) should === (
+            Left("--w must be an integer between 1 and 4096")
+          )
+        }
 
-      it("returns a Left if --w is negative") {
-        Config.load(List(), Map("b" -> i, "w" -> "-1")) should === (
-          Left("--w must be an integer between 1 and 4096")
-        )
-      }
-
-      it("returns a Left if --w is not an integer") {
-        Config.load(List(), Map("b" -> i, "w" -> "foo")) should === (
-          Left("--w must be an integer between 1 and 4096")
-        )
+        it("returns a Left if --w is not an integer") {
+          Config.load(List(), Map("b" -> i, "w" -> "foo")) should === (
+            Left("--w must be an integer between 1 and 4096")
+          )
+        }
       }
 
       describe("--alive-color") {
