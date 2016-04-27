@@ -226,6 +226,50 @@ class ConfigSpec extends FunSpec with Matchers {
           )
         }
       }
+
+      describe("--dead-color") {
+        it("returns Left if bad format") {
+          val params = Map("b" -> i, "dead-color" -> "0,100,300,")
+          Config.load(List(), params) should === (
+            Left("--dead-color must be Int,Int,Int between 0-255")
+          )
+        }
+
+        it("returns Right if good format") {
+          val params = Map("b" -> i, "dead-color" -> "0,100,255")
+          Config.load(List(), params) should === (
+            Right(
+              Config.emptyConfig.copy(
+                board_source = BoardSource.BuiltIn,
+                board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
+                dead_color = (0, 100, 255)
+              )
+            )
+          )
+        }
+      }
+
+      describe("--bg-color") {
+        it("returns Left if bad format") {
+          val params = Map("b" -> i, "bg-color" -> "0,100,300,")
+          Config.load(List(), params) should === (
+            Left("--bg-color must be Int,Int,Int between 0-255")
+          )
+        }
+
+        it("returns Right if good format") {
+          val params = Map("b" -> i, "bg-color" -> "0,100,255")
+          Config.load(List(), params) should === (
+            Right(
+              Config.emptyConfig.copy(
+                board_source = BoardSource.BuiltIn,
+                board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
+                bg_color = (0, 100, 255)
+              )
+            )
+          )
+        }
+      }
     }
 
     describe("handleColor") {

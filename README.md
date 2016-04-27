@@ -60,7 +60,6 @@ The compile task also runs wartremover.
 TODO
 ----
 
-- Specs for --alive-color & --dead-color & --bg-color
 - Refactor Config implementation
 - Refactor Config specs
 - Make some games boards larger now that you can control margin & width
