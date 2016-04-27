@@ -1,7 +1,7 @@
 Usage
 -----
 
-java -jar game-of-life-assembly-1.1.0.jar REQUIRED [OPTIONS]
+java -jar game-of-life-assembly-x.x.x.jar REQUIRED [OPTIONS]
 
 
 REQUIRED (one, and only one, of the following 3 must be defined)
@@ -47,8 +47,8 @@ separated integers between 0-255 inclusive.
 Example Usage
 -------------
 
-java -jar game-of-life-assembly-1.1.0.jar --b=7 --alive-color=255,0,0
-java -jar game-of-life-assembly-1.1.0.jar --f=foo.txt --t=100 --w=4
+java -jar game-of-life-assembly-x.x.x.jar --b=7 --alive-color=255,0,0
+java -jar game-of-life-assembly-x.x.x.jar --f=foo.txt --t=100 --w=4
 
 
 Example game board

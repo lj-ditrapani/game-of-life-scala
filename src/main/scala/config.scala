@@ -80,15 +80,13 @@ object Config {
   }
 
   def handleBuiltIn(value: String, config: Config): IfConfig = {
-    def onSuccess(num: Int): IfConfig = {
+    def onSuccess(num: Int): Config = {
       val name = boards(num - 1)
       val input_stream = getClass.getResourceAsStream(s"/$name.txt")
       val board_str = scala.io.Source.fromInputStream(input_stream).mkString
-      Right(
-        config.copy(
-          board_source = BoardSource.BuiltIn,
-          board_str = board_str
-        )
+      config.copy(
+        board_source = BoardSource.BuiltIn,
+        board_str = board_str
       )
     }
 
@@ -96,9 +94,8 @@ object Config {
       case true =>
         Left("Cannot define both --b and --f as board source; pick one")
       case false => {
-        parseInt(value, 1, board_count, "Invalid value for --b,") match {
-          case Left(s) => Left(s)
-          case Right(num) => onSuccess(num)
+        parseIntAndDo(value, 1, board_count, "Invalid value for --b,") {
+          onSuccess(_)
         }
       }
     }
@@ -124,24 +121,15 @@ object Config {
   }
 
   def handleTimeDelta(value: String, config: Config): IfConfig = {
-    parseInt(value, 1, 4096, "--t") match {
-      case Left(s) => Left(s)
-      case Right(num) => Right(config.copy(time_delta = num))
-    }
+    parseIntAndDo(value, 1, 4096, "--t") { (i) => config.copy(time_delta = i) }
   }
 
   def handleMargin(value: String, config: Config): IfConfig = {
-    parseInt(value, 0, 4096, "--m") match {
-      case Left(s) => Left(s)
-      case Right(num) => Right(config.copy(margin = num))
-    }
+    parseIntAndDo(value, 0, 4096, "--m") { (i) => config.copy(margin = i) }
   }
 
   def handleWidth(value: String, config: Config): IfConfig = {
-    parseInt(value, 1, 4096, "--w") match {
-      case Left(s) => Left(s)
-      case Right(num) => Right(config.copy(width = num))
-    }
+    parseIntAndDo(value, 1, 4096, "--w") { (i) => config.copy(width = i) }
   }
 
   def handleAliveColor(value: String, config: Config): IfConfig = {
@@ -199,6 +187,14 @@ object Config {
     Try(value.toInt) match {
       case Failure(_) => left
       case Success(num) => onSuccess(num)
+    }
+  }
+
+  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String = "")
+  (onSuccess: Int => Config): IfConfig = {
+    parseInt(value, lower, upper, prefix) match {
+      case Left(s) => Left(s)
+      case Right(num) => Right(onSuccess(num))
     }
   }
 }
