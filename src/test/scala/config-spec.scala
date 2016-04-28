@@ -277,42 +277,29 @@ class ConfigSpec extends FunSpec with Matchers {
     }
 
     describe("handleColor") {
-      val left: Either[String, (Int, Int, Int)] = Left("--bg-color must be Int,Int,Int between 0-255")
+      val left: Either[String, (Int, Int, Int)] = Left(
+        "--bg-color must be Int,Int,Int between 0-255"
+      )
+
+      val left_tests: List[(String, String)] = List(
+        ("tuple has leading garbage", "hi1,10,100"),
+        ("tuple has extra comma", "1,10,100,"),
+        ("missing comma", "1,10 100"),
+        ("not tuple", "foo"),
+        ("there is a non-number", "1,2,foo"),
+        ("not all ints", "1,2,1.5"),
+        ("any values less than 0", "1,2,-1"),
+        ("any values greater than 255", "1,2,256")
+      )
+
+      for ((msg, str) <- left_tests) {
+        it(s"returns Left if ${msg}") {
+          Config.handleColor(str, "bg") should be (left)
+        }
+      }
 
       it("returns Right((Int, Int, Int)) for 1,10,100") {
         Config.handleColor("1,10,100", "bg") should === (Right((1, 10, 100)))
-        }
-
-      it("returns Left if tuple has leading garbage") {
-        Config.handleColor("hi1,10,100", "bg") should === (left)
-      }
-
-      it("returns Left if tuple has extra comma") {
-        Config.handleColor("1,10,100,", "bg") should === (left)
-      }
-
-      it("returns Left if missing comma") {
-        Config.handleColor("1,10 100", "bg") should === (left)
-      }
-
-      it("returns Left if not tuple") {
-        Config.handleColor("foo", "bg") should === (left)
-      }
-
-      it("returns Left if there is a non-number") {
-        Config.handleColor("1,2,foo", "bg") should === (left)
-      }
-
-      it("returns Left if not all ints") {
-        Config.handleColor("1,2,1.5", "bg") should === (left)
-      }
-
-      it("returns Left if less than 0") {
-        Config.handleColor("1,2,-1", "bg") should === (left)
-      }
-
-      it("returns Left if greater than 255") {
-        Config.handleColor("1,2,256", "bg") should === (left)
       }
 
       it("returns Right even if leading zero") {
@@ -322,7 +309,7 @@ class ConfigSpec extends FunSpec with Matchers {
 
     describe("parseInt") {
       it("returns Right(Int) if string is int within bounds") {
-        Config.parseInt("5", 4, 6) should === (Right(5))
+        Config.parseInt("5", 4, 6, "") should === (Right(5))
       }
 
       it("can pass an optional prefix") {
@@ -342,7 +329,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Left if string int above bound") {
-        Config.parseInt("21", 10, 20) should === (
+        Config.parseInt("21", 10, 20, "") should === (
           Left(" must be an integer between 10 and 20")
         )
       }

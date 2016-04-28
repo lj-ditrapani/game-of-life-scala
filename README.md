@@ -60,7 +60,5 @@ The compile task also runs wartremover.
 TODO
 ----
 
-- Refactor Config implementation
-- Refactor Config specs
 - Make some games boards larger now that you can control margin & width
 - Add more boards

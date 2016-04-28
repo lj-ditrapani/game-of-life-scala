@@ -159,9 +159,9 @@ object Config {
       val r = m.group(1)
       val g = m.group(2)
       val b = m.group(3)
-      val either_r = parseInt(r, 0, 255)
-      val either_g = parseInt(g, 0, 255)
-      val either_b = parseInt(b, 0, 255)
+      val either_r = parseInt(r, 0, 255, "")
+      val either_g = parseInt(g, 0, 255, "")
+      val either_b = parseInt(b, 0, 255, "")
       (either_r.isRight && either_g.isRight && either_b.isRight) match {
         case true => Right((r.toInt, g.toInt, b.toInt))
         case false => left
@@ -175,7 +175,7 @@ object Config {
     }
   }
 
-  def parseInt(value: String, lower: Int, upper: Int, prefix: String = ""): IfInt = {
+  def parseInt(value: String, lower: Int, upper: Int, prefix: String): IfInt = {
     val left = Left(prefix + s" must be an integer between $lower and $upper")
     def onSuccess(num: Int): IfInt = {
       (num < lower || num > upper) match {
@@ -190,7 +190,7 @@ object Config {
     }
   }
 
-  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String = "")
+  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String)
   (onSuccess: Int => Config): IfConfig = {
     parseInt(value, lower, upper, prefix) match {
       case Left(s) => Left(s)
