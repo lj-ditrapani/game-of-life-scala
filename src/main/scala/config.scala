@@ -28,6 +28,7 @@ object Config {
     "blinkers",
     "blinker",
     "block-laying-switch-engine2",
+    "box",
     "diehard",
     "glider",
     "gosper-glider-gun",
