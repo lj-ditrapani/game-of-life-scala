@@ -8,7 +8,7 @@ object BoardSource extends Enumeration {
   val BuiltIn, File, UnSet = Value
 }
 
-case class Config(
+final case class Config(
   board_source: BoardSource.Source,
   board_str: String,
   time_delta: Int,
@@ -50,7 +50,7 @@ object Config {
     if (help_params.exists(p => p == "--help")) {
       Left("Printing help text...")
     } else if (!help_params.isEmpty) {
-      Left(s"Unknown command line parameter '${help_params.head}'")
+      Left(s"Unknown command line parameter in ${help_params}")
     } else {
       val if_config1: IfConfig = Right(Config.emptyConfig)
       val if_config2 = params.foldLeft(if_config1) { (if_config, kv) =>

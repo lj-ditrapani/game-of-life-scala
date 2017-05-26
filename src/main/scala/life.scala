@@ -5,7 +5,6 @@ import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
-import scala.util.{Try, Success, Failure}
 
 object Life extends JFXApp {
   Config.load(parameters.unnamed, Map(parameters.named.toSeq: _*)) match {
@@ -34,6 +33,7 @@ object Life extends JFXApp {
     }
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def startGfx(grid: Grid, config: Config): Unit = {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
@@ -56,8 +56,8 @@ object Life extends JFXApp {
   def makeGfxContext(grid: Grid, config: Config): GraphicsContext = {
     val width = config.width
     val margin = config.margin
-    val canvas_height = (width + margin) * grid.height + margin
-    val canvas_width = (width + margin) * grid.width + margin
+    val canvas_height = ((width + margin) * grid.height + margin).toDouble
+    val canvas_width = ((width + margin) * grid.width + margin).toDouble
     val canvas = new Canvas(canvas_width, canvas_height)
     val gc = canvas.graphicsContext2D
     canvas.translateX = 0
@@ -77,6 +77,7 @@ object Life extends JFXApp {
     gc
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def makeSceneDrawer(config: Config, gc: GraphicsContext): Grid => Unit = {
     val f: (Int, Int, Int) => Color = Color.rgb _
     def tupleRgb = Function.tupled(f)
@@ -95,7 +96,7 @@ object Life extends JFXApp {
           x += (width + margin)
           val color = if (cell.alive) alive_color else dead_color
           gc.setFill(color)
-          gc.fillRect(x, y, width, width)
+          gc.fillRect(x.toDouble, y.toDouble, width.toDouble, width.toDouble)
         }
       }
     }

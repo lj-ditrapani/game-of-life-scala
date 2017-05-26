@@ -24,7 +24,7 @@ class ConfigSpec extends FunSpec with Matchers {
 
       it("returns Left if unknown parameters found in help_params") {
         Config.load(List("foo"), Map()) should === (
-          Left("Unknown command line parameter 'foo'")
+          Left("Unknown command line parameter in List(foo)")
         )
       }
 
@@ -303,7 +303,7 @@ class ConfigSpec extends FunSpec with Matchers {
       }
 
       it("returns Right even if leading zero") {
-        Config.handleColor("1,2,06", "bg") should === (Right(1,2,6))
+        Config.handleColor("1,2,06", "bg") should === (Right((1,2,6)))
       }
     }
 

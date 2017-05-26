@@ -6,21 +6,21 @@ class CellSpec extends FunSpec with Matchers {
   describe("Cell Class") {
     describe("alive") {
       it("returns false if dead") {
-        Cell.dead.alive should be (false)
+        Cell.dead.alive shouldBe false
       }
 
       it("returns true if alive") {
-        Cell.living.alive should be (true)
+        Cell.living.alive shouldBe true
       }
     }
 
     describe("toChar") {
       it("returns + if alive") {
-        Cell.living.toChar should be ('+')
+        Cell.living.toChar shouldBe '+'
       }
 
       it("it returns - if dead") {
-        Cell.dead.toChar should be ('-')
+        Cell.dead.toChar shouldBe '-'
       }
     }
 
@@ -87,7 +87,7 @@ class CellSpec extends FunSpec with Matchers {
     describe("living") {
       it("returns singleton living cell") {
         val cell = Cell.living
-        cell should be (Cell.living)
+        cell shouldBe Cell.living
         cell should === (Cell(true))
       }
     }
@@ -95,7 +95,7 @@ class CellSpec extends FunSpec with Matchers {
     describe("dead") {
       it("returns singleton dead cell") {
         val cell = Cell.dead
-        cell should be (Cell.dead)
+        cell shouldBe Cell.dead
         cell should === (Cell(false))
       }
     }

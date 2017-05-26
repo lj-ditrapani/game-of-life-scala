@@ -1,8 +1,8 @@
 package info.ditrapani.gameoflife
 
-case class Grid(val cells: Vector[Vector[Cell]]) {
+final case class Grid(val cells: Vector[Vector[Cell]]) {
   val height = cells.size
-  val width = cells.head.size
+  val width = cells.headOption.map(_.size).getOrElse(0)
 
   override def toString: String = cells.map {
     rows => rows.map(_.toChar).mkString
@@ -48,7 +48,7 @@ object Grid {
 
   def build(str: String): Either[String, Grid] = {
     val lines = str.split("\n").to[Vector]
-    if ((lines.size < 3) || (lines.head.size < 3)) {
+    if ((lines.size < 3) || (width(lines) < 3)) {
       Left("Board must be at least 3 x 3")
     } else if (!lineLengthsMatch(lines)) {
       Left("Board line lengths don't match")
@@ -60,8 +60,11 @@ object Grid {
     }
   }
 
+  def width(lines: Vector[String]): Int =
+    lines.headOption.map(_.size).getOrElse(0)
+
   def lineLengthsMatch(lines: Vector[String]): Boolean = {
-    val init_size = lines.head.size
+    val init_size = width(lines)
     lines.map(_.size).forall(_ == init_size)
   }
 
@@ -70,7 +73,7 @@ object Grid {
   }
 }
 
-case class Cell(alive: Boolean) {
+final case class Cell(alive: Boolean) {
   def toChar: Char = if (alive) '+' else '-'
 
   def next(neighbor_count: Int): Cell = neighbor_count match {
