@@ -7,7 +7,7 @@ class GridSpec extends FunSpec with Matchers {
     describe("toString") {
       it("returns a string representation") {
         val str = "--+\n-+-\n+--"
-        Grid.build(str).fold(x => x, _.toString) should === (str)
+        Grid.build(str).fold(x => x, _.toString) should ===(str)
       }
     }
 
@@ -31,7 +31,7 @@ class GridSpec extends FunSpec with Matchers {
         val either = Grid.build(str)
         val result = either.fold(x => -1, _.countAliveNeighbors(row, column))
         it(s"returns $count at ($row, $column) for given grid") {
-          result should be (count)
+          result should be(count)
         }
       }
     }
@@ -40,13 +40,13 @@ class GridSpec extends FunSpec with Matchers {
       it("computes next board 1 cell dies") {
         val str1 = "+--\n---\n---"
         val str2 = "---\n---\n---"
-        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+        Grid.build(str1).fold(x => x, _.next.toString) should ===(str2)
       }
 
       it("computes next board fills board") {
         val str1 = "-+-\n-+-\n-+-"
         val str2 = "+++\n+++\n+++"
-        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
+        Grid.build(str1).fold(x => x, _.next.toString) should ===(str2)
       }
 
       it("computes next board for cross pulsar") {
@@ -62,8 +62,8 @@ class GridSpec extends FunSpec with Matchers {
                      |-----
                      |-----""".stripMargin
 
-        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
-        Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
+        Grid.build(str1).fold(x => x, _.next.toString) should ===(str2)
+        Grid.build(str1).fold(x => x, _.next.next.toString) should ===(str1)
       }
 
       it("computes next board for a toad pulsar") {
@@ -81,8 +81,8 @@ class GridSpec extends FunSpec with Matchers {
                      |--+---
                      |------""".stripMargin
 
-        Grid.build(str1).fold(x => x, _.next.toString) should === (str2)
-        Grid.build(str1).fold(x => x, _.next.next.toString) should === (str1)
+        Grid.build(str1).fold(x => x, _.next.toString) should ===(str2)
+        Grid.build(str1).fold(x => x, _.next.next.toString) should ===(str1)
       }
 
       it("computes next board for a boat still life") {
@@ -92,7 +92,7 @@ class GridSpec extends FunSpec with Matchers {
                      |--+--
                      |-----""".stripMargin
 
-        Grid.build(str1).fold(x => x, _.next.toString) should === (str1)
+        Grid.build(str1).fold(x => x, _.next.toString) should ===(str1)
       }
     }
   }
@@ -101,29 +101,29 @@ class GridSpec extends FunSpec with Matchers {
     describe("build") {
       it("returns Left if rows < 3") {
         val str = "--++-\n+-+-+"
-        Grid.build(str) should === (Left("Board must be at least 3 x 3"))
+        Grid.build(str) should ===(Left("Board must be at least 3 x 3"))
       }
 
       it("returns Left if columns < 3") {
         val str = "--\n+-\n++"
-        Grid.build(str) should === (Left("Board must be at least 3 x 3"))
+        Grid.build(str) should ===(Left("Board must be at least 3 x 3"))
       }
 
       it("returns Left if line lengths don't match") {
         val str = "--+\n+-\n+++"
-        Grid.build(str) should === (Left("Board line lengths don't match"))
+        Grid.build(str) should ===(Left("Board line lengths don't match"))
       }
 
       it("returns Left if any char is not + or -") {
         val str = "--+\n+?-\n+++"
-        Grid.build(str) should === (
+        Grid.build(str) should ===(
           Left("Board must contain only + and - characters")
         )
       }
 
       it("returns Right(Grid) if the str is legal") {
         val str = "--+\n-+-\n+--"
-        Grid.build(str) should === (
+        Grid.build(str) should ===(
           Right(
             Grid(
               Vector(
@@ -140,29 +140,29 @@ class GridSpec extends FunSpec with Matchers {
     describe("lineLengthsMatch") {
       it("returns true if all lines are the same length") {
         val lines = Vector("--++-", "+-+-+", "++--+")
-        Grid.lineLengthsMatch(lines) should be (true)
+        Grid.lineLengthsMatch(lines) should be(true)
       }
 
       it("returns false if the second line differs in length") {
         val lines = Vector("+-+-+", "+-+-", "+-+-")
-        Grid.lineLengthsMatch(lines) should be (false)
+        Grid.lineLengthsMatch(lines) should be(false)
       }
 
       it("returns false the last line differs in length") {
         val lines = Vector("+-+-+", "+-+-+", "+-+-")
-        Grid.lineLengthsMatch(lines) should be (false)
+        Grid.lineLengthsMatch(lines) should be(false)
       }
     }
 
     describe("onlyPlusesAndDashes") {
       it("returns true if all lines only have +'s & -'s") {
         val lines = Vector("--++-", "+-+-+", "++--+")
-        Grid.onlyPlusesAndDashes(lines) should be (true)
+        Grid.onlyPlusesAndDashes(lines) should be(true)
       }
 
       it("returns false if any line contains something else") {
         val lines = Vector("--++-", "+-+-+", "++|-+")
-        Grid.onlyPlusesAndDashes(lines) should be (false)
+        Grid.onlyPlusesAndDashes(lines) should be(false)
       }
     }
   }

@@ -4,9 +4,12 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
   val height = cells.size
   val width = cells.headOption.map(_.size).getOrElse(0)
 
-  override def toString: String = cells.map {
-    rows => rows.map(_.toChar).mkString
-  }.mkString("\n")
+  override def toString: String =
+    cells
+      .map { rows =>
+        rows.map(_.toChar).mkString
+      }
+      .mkString("\n")
 
   def countAliveNeighbors(row: Int, column: Int): Int = {
     def offset(x: Int, dx: Int, size: Int): Int = (x + dx) match {
@@ -40,11 +43,14 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
 }
 
 object Grid {
+
+  // format: off
   val neighbor_deltas = List(
     (-1, -1), (-1, 0), (-1, 1),
     ( 0, -1),          ( 0, 1),
     ( 1, -1), ( 1, 0), ( 1, 1)
   )
+  // format: on
 
   def build(str: String): Either[String, Grid] = {
     val lines = str.split("\n").to[Vector]

@@ -86,19 +86,20 @@ object Life extends JFXApp {
     val margin = config.margin
     val width = config.width
 
-    (grid) => {
-      var x = width * -1
-      var y = width * -1
-      for (row <- grid.cells) {
-        x = width * -1
-        y += (width + margin)
-        for (cell <- row) {
-          x += (width + margin)
-          val color = if (cell.alive) alive_color else dead_color
-          gc.setFill(color)
-          gc.fillRect(x.toDouble, y.toDouble, width.toDouble, width.toDouble)
+    (grid) =>
+      {
+        var x = width * -1
+        var y = width * -1
+        for (row <- grid.cells) {
+          x = width * -1
+          y += (width + margin)
+          for (cell <- row) {
+            x += (width + margin)
+            val color = if (cell.alive) alive_color else dead_color
+            gc.setFill(color)
+            gc.fillRect(x.toDouble, y.toDouble, width.toDouble, width.toDouble)
+          }
         }
       }
-    }
   }
 }

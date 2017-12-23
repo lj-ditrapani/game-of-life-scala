@@ -30,7 +30,7 @@ class CellSpec extends FunSpec with Matchers {
           val (count, expected_cell) = test
           val state = if (expected_cell.alive) "living" else "dead"
           it(s"returns the $state Cell if neighbor_count == $count") {
-            base_cell.next(count) should be (expected_cell)
+            base_cell.next(count) should be(expected_cell)
           }
         }
       }
@@ -66,21 +66,21 @@ class CellSpec extends FunSpec with Matchers {
   describe("Cell Object") {
     describe("get(Boolean)") {
       it("returns Cell.living if true") {
-        Cell.get(true) should be (Cell.living)
+        Cell.get(true) should be(Cell.living)
       }
 
       it("returns Cell.dead if false") {
-        Cell.get(false) should be (Cell.dead)
+        Cell.get(false) should be(Cell.dead)
       }
     }
 
     describe("get(Char)") {
       it("returns the dead cell if char is -") {
-        Cell.get('-') should be (Cell.dead)
+        Cell.get('-') should be(Cell.dead)
       }
 
       it("returns the alive cell if char is +") {
-        Cell.get('+') should be (Cell.living)
+        Cell.get('+') should be(Cell.living)
       }
     }
 
@@ -88,7 +88,7 @@ class CellSpec extends FunSpec with Matchers {
       it("returns singleton living cell") {
         val cell = Cell.living
         cell shouldBe Cell.living
-        cell should === (Cell(true))
+        cell should ===(Cell(true))
       }
     }
 
@@ -96,7 +96,7 @@ class CellSpec extends FunSpec with Matchers {
       it("returns singleton dead cell") {
         val cell = Cell.dead
         cell shouldBe Cell.dead
-        cell should === (Cell(false))
+        cell should ===(Cell(false))
       }
     }
   }

@@ -9,14 +9,14 @@ object BoardSource extends Enumeration {
 }
 
 final case class Config(
-  board_source: BoardSource.Source,
-  board_str: String,
-  time_delta: Int,
-  margin: Int,
-  width: Int,
-  alive_color: (Int, Int, Int),
-  dead_color: (Int, Int, Int),
-  bg_color: (Int, Int, Int)
+    board_source: BoardSource.Source,
+    board_str: String,
+    time_delta: Int,
+    margin: Int,
+    width: Int,
+    alive_color: (Int, Int, Int),
+    dead_color: (Int, Int, Int),
+    bg_color: (Int, Int, Int)
 )
 
 object Config {
@@ -39,14 +39,18 @@ object Config {
 
   val emptyConfig: Config = {
     Config(
-      BoardSource.UnSet, "", 500, 4, 16,
+      BoardSource.UnSet,
+      "",
+      500,
+      4,
+      16,
       (200, 220, 255),
       (90, 100, 130),
       (150, 170, 200)
     )
   }
 
-  def load(help_params: Seq[String], params: Map[String,String]): IfConfig = {
+  def load(help_params: Seq[String], params: Map[String, String]): IfConfig = {
     if (help_params.exists(p => p == "--help")) {
       Left("Printing help text...")
     } else if (!help_params.isEmpty) {
@@ -122,15 +126,21 @@ object Config {
   }
 
   def handleTimeDelta(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 1, 4096, "--t") { (i) => config.copy(time_delta = i) }
+    parseIntAndDo(value, 1, 4096, "--t") { (i) =>
+      config.copy(time_delta = i)
+    }
   }
 
   def handleMargin(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 0, 4096, "--m") { (i) => config.copy(margin = i) }
+    parseIntAndDo(value, 0, 4096, "--m") { (i) =>
+      config.copy(margin = i)
+    }
   }
 
   def handleWidth(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 1, 4096, "--w") { (i) => config.copy(width = i) }
+    parseIntAndDo(value, 1, 4096, "--w") { (i) =>
+      config.copy(width = i)
+    }
   }
 
   def handleAliveColor(value: String, config: Config): IfConfig = {
@@ -191,8 +201,9 @@ object Config {
     }
   }
 
-  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String)
-  (onSuccess: Int => Config): IfConfig = {
+  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String)(
+      onSuccess: Int => Config
+  ): IfConfig = {
     parseInt(value, lower, upper, prefix) match {
       case Left(s) => Left(s)
       case Right(num) => Right(onSuccess(num))
