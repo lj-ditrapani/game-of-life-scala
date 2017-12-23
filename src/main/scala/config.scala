@@ -25,6 +25,9 @@ object Config {
   type IfConfig = Either[String, Config]
   type IfInt = Either[String, Int]
 
+  private val both_board_sources_error =
+    Left("Cannot define both --b and --f as board source; pick one")
+
   val boards = Vector(
     "acorn",
     "blinkers",
@@ -39,7 +42,7 @@ object Config {
   )
   val board_count = Config.boards.size
 
-  val emptyConfig: Config = {
+  val emptyConfig: Config =
     Config(
       BoardSource.UnSet,
       "",
@@ -50,26 +53,22 @@ object Config {
       (90, 100, 130),
       (150, 170, 200)
     )
-  }
 
-  def load(help_params: Seq[String], params: Map[String, String]): IfConfig = {
-    if (help_params.exists(p => p == "--help")) {
+  def load(help_params: Seq[String], params: Map[String, String]): IfConfig =
+    if (help_params.exists(_ == "--help")) {
       Left("Printing help text...")
     } else if (!help_params.isEmpty) {
       Left(s"Unknown command line parameter in ${help_params}")
     } else {
-      val if_config1: IfConfig = Right(Config.emptyConfig)
-      val if_config2 = params.foldLeft(if_config1) { (if_config, kv) =>
-        if_config.right.flatMap { addParams(kv, _) }
+      val zero: IfConfig = Right(Config.emptyConfig)
+      val if_config = params.foldLeft(zero) { (if_config, kv) =>
+        if_config.flatMap { addParams(kv, _) }
       }
-      if_config2.right.flatMap { (config) =>
-        config.board_source == BoardSource.UnSet match {
-          case true => Left("Must define either --b or --f as board source")
-          case false => Right(config)
-        }
+      if_config.exists { _.board_source == BoardSource.UnSet } match {
+        case true => Left("Must define either --b or --f as board source")
+        case false => if_config
       }
     }
-  }
 
   def addParams(kv: (String, String), config: Config): IfConfig = {
     val (flag, value) = kv
@@ -98,14 +97,14 @@ object Config {
     }
 
     (config.board_source == BoardSource.File) match {
-      case true => Left("Cannot define both --b and --f as board source; pick one")
+      case true => both_board_sources_error
       case false => parseInt(value, 1, board_count, "Invalid value for --b,").map(onSuccess)
     }
   }
 
-  def handleFile(value: String, config: Config): IfConfig = {
+  def handleFile(value: String, config: Config): IfConfig =
     if (config.board_source == BoardSource.BuiltIn) {
-      Left("Cannot define both --b and --f as board source; pick one")
+      both_board_sources_error
     } else {
       Try(scala.io.Source.fromFile(value).mkString) match {
         case Failure(exception) =>
@@ -119,25 +118,21 @@ object Config {
           )
       }
     }
-  }
 
-  def handleTimeDelta(value: String, config: Config): IfConfig = {
+  def handleTimeDelta(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--t").map { (i) =>
       config.copy(time_delta = i)
     }
-  }
 
-  def handleMargin(value: String, config: Config): IfConfig = {
+  def handleMargin(value: String, config: Config): IfConfig =
     parseInt(value, 0, 4096, "--m").map { (i) =>
       config.copy(margin = i)
     }
-  }
 
-  def handleWidth(value: String, config: Config): IfConfig = {
+  def handleWidth(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--w").map { (i) =>
       config.copy(width = i)
     }
-  }
 
   def handleAliveColor(value: String, config: Config): IfConfig =
     handleColor(value, "alive").map { color =>
@@ -175,12 +170,11 @@ object Config {
 
   def parseInt(value: String, lower: Int, upper: Int, prefix: String): IfInt = {
     val left = Left(prefix + s" must be an integer between $lower and $upper")
-    def onSuccess(num: Int): IfInt = {
+    def onSuccess(num: Int): IfInt =
       (num < lower || num > upper) match {
         case true => left
         case false => Right(num)
       }
-    }
 
     Try(value.toInt) match {
       case Failure(_) => left

@@ -69,5 +69,5 @@ Check for dependency updates
 TODO
 ----
 
-- Make some games boards larger now that you can control margin & width
-- Add more boards
+- Move board_str out of Config class;  then load can be pure.
+    - File loading (built-in or file) can be done in IO monad
