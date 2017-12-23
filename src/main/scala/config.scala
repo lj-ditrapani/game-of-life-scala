@@ -98,13 +98,8 @@ object Config {
     }
 
     (config.board_source == BoardSource.File) match {
-      case true =>
-        Left("Cannot define both --b and --f as board source; pick one")
-      case false => {
-        parseInt(value, 1, board_count, "Invalid value for --b,").map {
-          onSuccess(_)
-        }
-      }
+      case true => Left("Cannot define both --b and --f as board source; pick one")
+      case false => parseInt(value, 1, board_count, "Invalid value for --b,").map(onSuccess)
     }
   }
 
@@ -115,14 +110,13 @@ object Config {
       Try(scala.io.Source.fromFile(value).mkString) match {
         case Failure(exception) =>
           Left(exception.toString())
-        case Success(board_str) => {
+        case Success(board_str) =>
           Right(
             config.copy(
               board_source = BoardSource.File,
               board_str = board_str
             )
           )
-        }
       }
     }
   }
@@ -145,26 +139,20 @@ object Config {
     }
   }
 
-  def handleAliveColor(value: String, config: Config): IfConfig = {
-    handleColor(value, "alive") match {
-      case Right((r, g, b)) => Right(config.copy(alive_color = (r, g, b)))
-      case Left(s) => Left(s)
+  def handleAliveColor(value: String, config: Config): IfConfig =
+    handleColor(value, "alive").map { color =>
+      config.copy(alive_color = color)
     }
-  }
 
-  def handleDeadColor(value: String, config: Config): IfConfig = {
-    handleColor(value, "dead") match {
-      case Right((r, g, b)) => Right(config.copy(dead_color = (r, g, b)))
-      case Left(s) => Left(s)
+  def handleDeadColor(value: String, config: Config): IfConfig =
+    handleColor(value, "dead").map { color =>
+      config.copy(dead_color = color)
     }
-  }
 
-  def handleBgColor(value: String, config: Config): IfConfig = {
-    handleColor(value, "bg") match {
-      case Right((r, g, b)) => Right(config.copy(bg_color = (r, g, b)))
-      case Left(s) => Left(s)
+  def handleBgColor(value: String, config: Config): IfConfig =
+    handleColor(value, "bg").map { color =>
+      config.copy(bg_color = color)
     }
-  }
 
   def handleColor(value: String, color_type: String): Either[String, (Int, Int, Int)] = {
     val pattern = "^(\\d{1,3}),(\\d{1,3}),(\\d{1,3})$".r
