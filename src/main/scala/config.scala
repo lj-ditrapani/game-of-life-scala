@@ -3,9 +3,11 @@ package info.ditrapani.gameoflife
 import scala.util.{Try, Success, Failure}
 import scala.util.matching.Regex.Match
 
-object BoardSource extends Enumeration {
-  type Source = Value
-  val BuiltIn, File, UnSet = Value
+object BoardSource {
+  sealed abstract class Source
+  object BuiltIn extends Source
+  object File extends Source
+  object UnSet extends Source
 }
 
 final case class Config(
