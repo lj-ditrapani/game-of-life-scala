@@ -1,18 +1,18 @@
-lazy val root = (project in file(".")).
-  settings(
-    name := "game-of-life",
-    version := "1.2.0",
-    scalaVersion := "2.12.4",
-    organization := "ditrapani.info",
-    // Fork a new JVM for 'run' and 'test:run', to
-    // avoid JavaFX double initialization problems
-    fork := true
-  )
+lazy val root = (project in file(".")).settings(
+  name := "game-of-life",
+  version := "1.2.0",
+  scalaVersion := "2.12.4",
+  organization := "ditrapani.info",
+  // Fork a new JVM for 'run' and 'test:run', to
+  // avoid JavaFX double initialization problems
+  fork := true
+)
 
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-deprecation",
-  "-encoding", "UTF-8",
+  "-encoding",
+  "UTF-8",
   "-unchecked",
   "-Xlint",
   "-Ywarn-dead-code",
@@ -32,3 +32,6 @@ wartremoverWarnings ++= Warts.allBut(
   Wart.Overloading,
   Wart.PublicInference
 )
+
+scalafmtVersion in ThisBuild := "1.3.0"
+scalafmtOnCompile in ThisBuild := true
