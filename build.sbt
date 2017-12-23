@@ -2,7 +2,7 @@ lazy val root = (project in file(".")).
   settings(
     name := "game-of-life",
     version := "1.2.0",
-    scalaVersion := "2.12.2",
+    scalaVersion := "2.12.4",
     organization := "ditrapani.info",
     // Fork a new JVM for 'run' and 'test:run', to
     // avoid JavaFX double initialization problems
@@ -22,8 +22,8 @@ scalacOptions ++= Seq(
   "-Xfuture"
 )
 
-libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.102-R11"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.144-R12"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 wartremoverWarnings ++= Warts.allBut(
   Wart.Enumeration,
   Wart.Equals,

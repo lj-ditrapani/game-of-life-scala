@@ -56,6 +56,15 @@ The compile task also runs wartremover.
     sbt test            # or anything that runs compile
     sbt scalastyle
 
+Test coverage
+
+    sbt clean coverage test
+    sbt coverageReport
+
+Check for dependency updates
+
+    sbt dependencyUpdates
+
 
 TODO
 ----
