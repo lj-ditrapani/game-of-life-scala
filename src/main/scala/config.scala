@@ -101,7 +101,7 @@ object Config {
       case true =>
         Left("Cannot define both --b and --f as board source; pick one")
       case false => {
-        parseIntAndDo(value, 1, board_count, "Invalid value for --b,") {
+        parseInt(value, 1, board_count, "Invalid value for --b,").map {
           onSuccess(_)
         }
       }
@@ -128,19 +128,19 @@ object Config {
   }
 
   def handleTimeDelta(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 1, 4096, "--t") { (i) =>
+    parseInt(value, 1, 4096, "--t").map { (i) =>
       config.copy(time_delta = i)
     }
   }
 
   def handleMargin(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 0, 4096, "--m") { (i) =>
+    parseInt(value, 0, 4096, "--m").map { (i) =>
       config.copy(margin = i)
     }
   }
 
   def handleWidth(value: String, config: Config): IfConfig = {
-    parseIntAndDo(value, 1, 4096, "--w") { (i) =>
+    parseInt(value, 1, 4096, "--w").map { (i) =>
       config.copy(width = i)
     }
   }
@@ -167,25 +167,22 @@ object Config {
   }
 
   def handleColor(value: String, color_type: String): Either[String, (Int, Int, Int)] = {
-    val left = Left(s"--$color_type-color must be Int,Int,Int between 0-255")
-    def processMatch(m: Match): Either[String, (Int, Int, Int)] = {
-      val r = m.group(1)
-      val g = m.group(2)
-      val b = m.group(3)
-      val either_r = parseInt(r, 0, 255, "")
-      val either_g = parseInt(g, 0, 255, "")
-      val either_b = parseInt(b, 0, 255, "")
-      (either_r.isRight && either_g.isRight && either_b.isRight) match {
-        case true => Right((r.toInt, g.toInt, b.toInt))
-        case false => left
-      }
-    }
-
     val pattern = "^(\\d{1,3}),(\\d{1,3}),(\\d{1,3})$".r
-    pattern.findFirstMatchIn(value) match {
-      case Some(m) => processMatch(m)
-      case None => left
-    }
+    val errorMessage = s"--$color_type-color must be Int,Int,Int between 0-255"
+
+    def processMatch(m: Match): Either[String, (Int, Int, Int)] =
+      for {
+        ri <- parseInt(m.group(1), 0, 255, "")
+        gi <- parseInt(m.group(2), 0, 255, "")
+        bi <- parseInt(m.group(3), 0, 255, "")
+      } yield (ri, gi, bi)
+
+    pattern
+      .findFirstMatchIn(value)
+      .toRight[String]("")
+      .flatMap(processMatch)
+      .left
+      .map(_ => errorMessage)
   }
 
   def parseInt(value: String, lower: Int, upper: Int, prefix: String): IfInt = {
@@ -200,15 +197,6 @@ object Config {
     Try(value.toInt) match {
       case Failure(_) => left
       case Success(num) => onSuccess(num)
-    }
-  }
-
-  def parseIntAndDo(value: String, lower: Int, upper: Int, prefix: String)(
-      onSuccess: Int => Config
-  ): IfConfig = {
-    parseInt(value, lower, upper, prefix) match {
-      case Left(s) => Left(s)
-      case Right(num) => Right(onSuccess(num))
     }
   }
 }
