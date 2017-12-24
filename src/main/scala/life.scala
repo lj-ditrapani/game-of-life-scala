@@ -7,10 +7,11 @@ import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
 
 object Life extends JFXApp {
-  Config.load(parameters.unnamed, Map(parameters.named.toSeq: _*)) match {
-    case Left(s) => printErrorHelpAndExit(s)
-    case Right(config) => loadAndRun(config)
-  }
+  Config
+    .load(parameters.unnamed, Map(parameters.named.toSeq: _*))
+    .map(runGame)
+    .left
+    .foreach(printErrorHelpAndExit)
 
   def printErrorHelpAndExit(message: String): Unit = {
     if (message != "Printing help text...") {
@@ -26,12 +27,8 @@ object Life extends JFXApp {
     System.exit(0)
   }
 
-  def loadAndRun(config: Config): Unit = {
-    Grid.build(config.board_str) match {
-      case Left(s) => printErrorHelpAndExit(s)
-      case Right(grid) => startGfx(grid, config)
-    }
-  }
+  def runGame(config: Config): Either[String, Unit] =
+    Grid.build(config.board_str).map(startGfx(_, config))
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def startGfx(grid: Grid, config: Config): Unit = {

@@ -71,3 +71,8 @@ TODO
 
 - Move board_str out of Config class;  then load can be pure.
     - File loading (built-in or file) can be done in IO monad
+- Could use monix observable to 'push' each frame update.
+    - frame updates would process on another thread via task
+    - Throttle overflow with dropping strategy and width of 1
+        - only one thread should be writting to the screen at a time
+        - additional frames should just be dropped until the current is finished

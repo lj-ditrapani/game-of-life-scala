@@ -22,8 +22,11 @@ scalacOptions ++= Seq(
   "-Xfuture"
 )
 
-libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.144-R12"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+libraryDependencies ++= Seq(
+  "io.monix" %% "monix-eval" % "2.3.2",
+  "org.scalafx" %% "scalafx" % "8.0.144-R12",
+  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+)
 wartremoverWarnings ++= Warts.allBut(
   Wart.Enumeration,
   Wart.Equals,
