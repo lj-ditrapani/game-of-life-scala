@@ -6,9 +6,15 @@ import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
 
+class Params(parameters: JFXApp.Parameters) {
+  def unnamed: List[String] = parameters.unnamed.toList
+  def named: Map[String, String] = Map(parameters.named.toSeq: _*)
+}
+
 object Life extends JFXApp {
+  val params = new Params(parameters)
   Config
-    .load(parameters.unnamed, Map(parameters.named.toSeq: _*))
+    .load(params.unnamed, params.named)
     .map(runGame)
     .left
     .foreach(printErrorHelpAndExit)
@@ -76,8 +82,7 @@ object Life extends JFXApp {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def makeSceneDrawer(config: Config, gc: GraphicsContext): Grid => Unit = {
-    val f: (Int, Int, Int) => Color = Color.rgb _
-    def tupleRgb = Function.tupled(f)
+    def tupleRgb = Function.tupled[Int, Int, Int, Color](Color.rgb)
     val alive_color = tupleRgb(config.alive_color)
     val dead_color = tupleRgb(config.dead_color)
     val margin = config.margin

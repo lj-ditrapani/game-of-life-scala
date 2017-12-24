@@ -76,3 +76,5 @@ TODO
     - Throttle overflow with dropping strategy and width of 1
         - only one thread should be writting to the screen at a time
         - additional frames should just be dropped until the current is finished
+    - Use MVar to pass new grid back to beginning of stream on each iteration
+- Make config invalid & valid, and source only present on valid

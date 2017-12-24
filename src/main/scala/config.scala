@@ -54,7 +54,7 @@ object Config {
       (150, 170, 200)
     )
 
-  def load(help_params: Seq[String], params: Map[String, String]): IfConfig =
+  def load(help_params: List[String], params: Map[String, String]): IfConfig =
     if (help_params.exists(_ == "--help")) {
       Left("Printing help text...")
     } else if (!help_params.isEmpty) {
