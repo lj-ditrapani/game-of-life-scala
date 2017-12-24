@@ -5,6 +5,9 @@ import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
+import config.{BoardSource, Config}
+
+import scala.util.{Try, Success, Failure}
 
 class Params(parameters: JFXApp.Parameters) {
   def unnamed: List[String] = parameters.unnamed.toList
@@ -14,7 +17,7 @@ class Params(parameters: JFXApp.Parameters) {
 object Life extends JFXApp {
   val params = new Params(parameters)
   Config
-    .load(params.unnamed, params.named)
+    .parse(params.unnamed, params.named)
     .map(runGame)
     .left
     .foreach(printErrorHelpAndExit)
@@ -33,8 +36,23 @@ object Life extends JFXApp {
     System.exit(0)
   }
 
+  def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
+    board_source match {
+      case BoardSource.BuiltIn(index) =>
+        val name = Config.boards(index)
+        val input_stream = getClass.getResourceAsStream(s"/$name.txt")
+        Right(scala.io.Source.fromInputStream(input_stream).mkString)
+      case BoardSource.File(path) =>
+        Try(scala.io.Source.fromFile(path).mkString) match {
+          case Failure(exception) => Left(exception.toString())
+          case Success(board_str) => Right(board_str)
+        }
+    }
+
   def runGame(config: Config): Either[String, Unit] =
-    Grid.build(config.board_str).map(startGfx(_, config))
+    getBoardStr(config.board_source).flatMap { board_str =>
+      Grid.build(board_str).map(startGfx(_, config))
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def startGfx(grid: Grid, config: Config): Unit = {

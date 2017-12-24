@@ -1,18 +1,16 @@
-package info.ditrapani.gameoflife
+package info.ditrapani.gameoflife.config
 
 import scala.util.{Try, Success, Failure}
 import scala.util.matching.Regex.Match
 
 object BoardSource {
   sealed abstract class Source
-  object BuiltIn extends Source
-  object File extends Source
-  object UnSet extends Source
+  final case class BuiltIn(index: Int) extends Source
+  final case class File(path: String) extends Source
 }
 
 final case class Config(
     board_source: BoardSource.Source,
-    board_str: String,
     time_delta: Int,
     margin: Int,
     width: Int,
@@ -24,9 +22,6 @@ final case class Config(
 object Config {
   type IfConfig = Either[String, Config]
   type IfInt = Either[String, Int]
-
-  private val both_board_sources_error =
-    Left("Cannot define both --b and --f as board source; pick one")
 
   val boards = Vector(
     "acorn",
@@ -42,10 +37,9 @@ object Config {
   )
   val board_count = Config.boards.size
 
-  val emptyConfig: Config =
+  def defaultConfig(boardSource: BoardSource.Source): Config =
     Config(
-      BoardSource.UnSet,
-      "",
+      boardSource,
       500,
       4,
       16,
@@ -54,27 +48,39 @@ object Config {
       (150, 170, 200)
     )
 
-  def load(help_params: List[String], params: Map[String, String]): IfConfig =
+  def parse(help_params: List[String], params: Map[String, String]): IfConfig =
     if (help_params.exists(_ == "--help")) {
       Left("Printing help text...")
     } else if (!help_params.isEmpty) {
       Left(s"Unknown command line parameter in ${help_params}")
     } else {
-      val zero: IfConfig = Right(Config.emptyConfig)
-      val if_config = params.foldLeft(zero) { (if_config, kv) =>
-        if_config.flatMap { addParams(kv, _) }
-      }
-      if_config.exists { _.board_source == BoardSource.UnSet } match {
-        case true => Left("Must define either --b or --f as board source")
-        case false => if_config
+      getSource(params).flatMap {
+        case (source, new_params) => {
+          val zero: IfConfig = Right(Config.defaultConfig(source))
+          new_params.foldLeft(zero) { (if_config, kv) =>
+            if_config.flatMap { addParams(kv, _) }
+          }
+        }
       }
     }
+
+  def getSource(
+      params: Map[String, String]
+  ): Either[String, (BoardSource.Source, Map[String, String])] = {
+    if (params.contains("b") && params.contains("f")) {
+      Left("Cannot define both --b and --f as board source; pick one")
+    } else if (params.contains("b")) {
+      parseBuiltIn(params("b")).map(i => (BoardSource.BuiltIn(i), params - "b"))
+    } else if (params.contains("f")) {
+      Right((BoardSource.File(params("f")), params - "f"))
+    } else {
+      Left("Must define either --b or --f as board source")
+    }
+  }
 
   def addParams(kv: (String, String), config: Config): IfConfig = {
     val (flag, value) = kv
     flag match {
-      case "b" => handleBuiltIn(value, config)
-      case "f" => handleFile(value, config)
       case "t" => handleTimeDelta(value, config)
       case "m" => handleMargin(value, config)
       case "w" => handleWidth(value, config)
@@ -85,39 +91,8 @@ object Config {
     }
   }
 
-  def handleBuiltIn(value: String, config: Config): IfConfig = {
-    def onSuccess(num: Int): Config = {
-      val name = boards(num - 1)
-      val input_stream = getClass.getResourceAsStream(s"/$name.txt")
-      val board_str = scala.io.Source.fromInputStream(input_stream).mkString
-      config.copy(
-        board_source = BoardSource.BuiltIn,
-        board_str = board_str
-      )
-    }
-
-    (config.board_source == BoardSource.File) match {
-      case true => both_board_sources_error
-      case false => parseInt(value, 1, board_count, "Invalid value for --b,").map(onSuccess)
-    }
-  }
-
-  def handleFile(value: String, config: Config): IfConfig =
-    if (config.board_source == BoardSource.BuiltIn) {
-      both_board_sources_error
-    } else {
-      Try(scala.io.Source.fromFile(value).mkString) match {
-        case Failure(exception) =>
-          Left(exception.toString())
-        case Success(board_str) =>
-          Right(
-            config.copy(
-              board_source = BoardSource.File,
-              board_str = board_str
-            )
-          )
-      }
-    }
+  def parseBuiltIn(value: String): Either[String, Int] =
+    parseInt(value, 1, board_count, "Invalid value for --b,").map(_ - 1)
 
   def handleTimeDelta(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--t").map { (i) =>

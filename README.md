@@ -71,10 +71,7 @@ TODO
 
 - Move board_str out of Config class;  then load can be pure.
     - File loading (built-in or file) can be done in IO monad
-- Could use monix observable to 'push' each frame update.
-    - frame updates would process on another thread via task
-    - Throttle overflow with dropping strategy and width of 1
-        - only one thread should be writting to the screen at a time
-        - additional frames should just be dropped until the current is finished
-    - Use MVar to pass new grid back to beginning of stream on each iteration
-- Make config invalid & valid, and source only present on valid
+- Get rid of animation timer and use recursive function with Talk.delay instead
+    - impossible to overflow; no need to throttle
+    - guarantees only one thread writing to gfx canvas at a time
+    - new grid gets passed to next recursive call; no need for mutable var or MVar
