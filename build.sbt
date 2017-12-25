@@ -15,6 +15,7 @@ scalacOptions ++= Seq(
   "UTF-8",
   "-unchecked",
   "-Xlint",
+  "-Ypartial-unification",
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
   "-Ywarn-unused",
@@ -23,8 +24,10 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.monix" %% "monix-eval" % "2.3.2",
+  "io.monix" %% "monix-eval" % "3.0.0-M2",
   "org.scalafx" %% "scalafx" % "8.0.144-R12",
+  "org.typelevel" %% "cats-core" % "1.0.0-RC2",
+// Tests
   "org.mockito" % "mockito-core" % "1.10.19" % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 )

@@ -1,11 +1,11 @@
 package info.ditrapani.gameoflife
 
+import config.{BoardSource, Config}
 import scalafx.application.JFXApp
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
-import config.{BoardSource, Config}
 
 import scala.util.{Try, Success, Failure}
 
