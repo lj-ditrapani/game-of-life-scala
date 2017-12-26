@@ -75,3 +75,7 @@ TODO
     - impossible to overflow; no need to throttle
     - guarantees only one thread writing to gfx canvas at a time
     - new grid gets passed to next recursive call; no need for mutable var or MVar
+- Use nested recursive function (yloop and xloop) for drawScene
+    - no more vars
+    - Task only for gc.setColor & gc.fillRect
+    - abstract gc to DI interface (makes it testable)
