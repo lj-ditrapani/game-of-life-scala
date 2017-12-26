@@ -31,3 +31,9 @@ class SceneDrawer(config: Config, gc: GraphicsContext) {
     }
   }
 }
+
+object SceneDrawerFactory {
+
+  def apply(config: Config, gc: GraphicsContext): SceneDrawer =
+    new SceneDrawer(config, gc)
+}
