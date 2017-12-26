@@ -59,9 +59,9 @@ object Life extends JFXApp {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
     val gc = makeGfxContext(grid, config)
-    val drawScene = makeSceneDrawer(config, gc)
+    val sceneDrawer = new SceneDrawer(config, new BoxDrawerImpl(gc))
 
-    drawScene(curr_grid)
+    sceneDrawer.drawScene(curr_grid)
 
     var last_time = System.nanoTime()
 
@@ -69,7 +69,7 @@ object Life extends JFXApp {
       if (curr_time - last_time > time_delta) {
         last_time = curr_time
         curr_grid = curr_grid.next
-        drawScene(curr_grid)
+        sceneDrawer.drawScene(curr_grid)
       }
     }).start()
   }
@@ -96,30 +96,5 @@ object Life extends JFXApp {
     }
 
     gc
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  def makeSceneDrawer(config: Config, gc: GraphicsContext): Grid => Unit = {
-    def tupleRgb = Function.tupled[Int, Int, Int, Color](Color.rgb)
-    val alive_color = tupleRgb(config.alive_color)
-    val dead_color = tupleRgb(config.dead_color)
-    val margin = config.margin
-    val width = config.width
-
-    (grid) =>
-      {
-        var x = width * -1
-        var y = width * -1
-        for (row <- grid.cells) {
-          x = width * -1
-          y += (width + margin)
-          for (cell <- row) {
-            x += (width + margin)
-            val color = if (cell.alive) alive_color else dead_color
-            gc.setFill(color)
-            gc.fillRect(x.toDouble, y.toDouble, width.toDouble, width.toDouble)
-          }
-        }
-      }
   }
 }

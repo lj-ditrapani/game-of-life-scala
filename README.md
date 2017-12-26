@@ -69,7 +69,7 @@ Check for dependency updates
 TODO
 ----
 
-- Move board_str out of Config class;  then load can be pure.
+- Move `board_str` out of Config class;  then load can be pure.
     - File loading (built-in or file) can be done in Task monad
 - graphicsContext  methods must be called from the JavaFx thread once the gc is attached to a scene
     - Make all gc calls happen from AnimationTimer.handle.  Grid can be computed on another thread.

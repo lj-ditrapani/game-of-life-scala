@@ -14,7 +14,7 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
   def countAliveNeighbors(row: Int, column: Int): Int = {
     def offset(x: Int, dx: Int, size: Int): Int = (x + dx) match {
       case -1 => size - 1
-      case wrap if wrap == size => 0
+      case `size` => 0
       case x2 => x2
     }
     def isAlive(neighbor_delta: (Int, Int)): Boolean = {
