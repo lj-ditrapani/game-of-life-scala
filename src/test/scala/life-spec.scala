@@ -7,6 +7,7 @@ import scalafx.application.JFXApp
 
 import scala.collection.mutable.{Map => MutableMap}
 
+@SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 class ParamsSpec extends FunSpec with Matchers with MockitoSugar {
   val parameters = mock[JFXApp.Parameters]
 

@@ -64,7 +64,7 @@ object Config {
       }
     }
 
-  def getSource(
+  private def getSource(
       params: Map[String, String]
   ): Either[String, (BoardSource.Source, Map[String, String])] = {
     if (params.contains("b") && params.contains("f")) {
@@ -78,7 +78,7 @@ object Config {
     }
   }
 
-  def addParams(kv: (String, String), config: Config): IfConfig = {
+  private def addParams(kv: (String, String), config: Config): IfConfig = {
     val (flag, value) = kv
     flag match {
       case "t" => handleTimeDelta(value, config)
@@ -91,35 +91,35 @@ object Config {
     }
   }
 
-  def parseBuiltIn(value: String): Either[String, Int] =
+  private def parseBuiltIn(value: String): Either[String, Int] =
     parseInt(value, 1, board_count, "Invalid value for --b,").map(_ - 1)
 
-  def handleTimeDelta(value: String, config: Config): IfConfig =
+  private def handleTimeDelta(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--t").map { (i) =>
       config.copy(time_delta = i)
     }
 
-  def handleMargin(value: String, config: Config): IfConfig =
+  private def handleMargin(value: String, config: Config): IfConfig =
     parseInt(value, 0, 4096, "--m").map { (i) =>
       config.copy(margin = i)
     }
 
-  def handleWidth(value: String, config: Config): IfConfig =
+  private def handleWidth(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--w").map { (i) =>
       config.copy(width = i)
     }
 
-  def handleAliveColor(value: String, config: Config): IfConfig =
+  private def handleAliveColor(value: String, config: Config): IfConfig =
     handleColor(value, "alive").map { color =>
       config.copy(alive_color = color)
     }
 
-  def handleDeadColor(value: String, config: Config): IfConfig =
+  private def handleDeadColor(value: String, config: Config): IfConfig =
     handleColor(value, "dead").map { color =>
       config.copy(dead_color = color)
     }
 
-  def handleBgColor(value: String, config: Config): IfConfig =
+  private def handleBgColor(value: String, config: Config): IfConfig =
     handleColor(value, "bg").map { color =>
       config.copy(bg_color = color)
     }

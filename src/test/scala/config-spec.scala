@@ -1,42 +1,44 @@
-package info.ditrapani.gameoflife
+package info.ditrapani.gameoflife.config
 
 import org.scalatest.{FunSpec, Matchers}
 
 class ConfigSpec extends FunSpec with Matchers {
   describe("Config Class") {
     it("has instance values") {
-      val config = Config.emptyConfig
-      config.board_source should be(BoardSource.UnSet)
+      val source = BoardSource.BuiltIn(1)
+      val config = Config.defaultConfig(source)
+      config.board_source shouldBe source
     }
   }
 
   describe("Config Object") {
-    val i = (Config.boards.indexOf("blinker") + 1).toString
+    val index = Config.boards.indexOf("blinker")
+    val num = (index + 1).toString
 
-    describe("load") {
+    describe("parse") {
       describe("--help") {
         it("returns Left") {
-          Config.load(List("--help"), Map()) should ===(
+          Config.parse(List("--help"), Map()) should ===(
             Left("Printing help text...")
           )
         }
       }
 
       it("returns Left if unknown parameters found in help_params") {
-        Config.load(List("foo"), Map()) should ===(
+        Config.parse(List("foo"), Map()) should ===(
           Left("Unknown command line parameter in List(foo)")
         )
       }
 
       it("returns Left if unknown parameters found in params") {
-        Config.load(List(), Map("b" -> i, "a" -> "")) should ===(
+        Config.parse(List(), Map("b" -> num, "a" -> "")) should ===(
           Left("Unknown command line parameter '--a'")
         )
       }
 
       describe("--b") {
         it("returns Left if --b is specified with empty string") {
-          Config.load(List(), Map("b" -> "")) should ===(
+          Config.parse(List(), Map("b" -> "")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.board_count}"
@@ -45,7 +47,7 @@ class ConfigSpec extends FunSpec with Matchers {
         }
 
         it("returns Left if --b is specified without integer") {
-          Config.load(List(), Map("b" -> "foo")) should ===(
+          Config.parse(List(), Map("b" -> "foo")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.board_count}"
@@ -54,18 +56,15 @@ class ConfigSpec extends FunSpec with Matchers {
         }
 
         it("returns Right if --b is specified with integer") {
-          Config.load(List(), Map("b" -> i)) should ===(
+          Config.parse(List(), Map("b" -> num)) should ===(
             Right(
-              Config.emptyConfig.copy(
-                board_source = BoardSource.BuiltIn,
-                board_str = "-----\n--+--\n--+--\n--+--\n-----\n"
-              )
+              Config.defaultConfig(BoardSource.BuiltIn(index))
             )
           )
         }
 
         it("returns Left if --b is specified with integer < 1") {
-          Config.load(List(), Map("b" -> "0")) should ===(
+          Config.parse(List(), Map("b" -> "0")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.board_count}"
@@ -78,7 +77,7 @@ class ConfigSpec extends FunSpec with Matchers {
             s"${Config.board_count}"
         ) {
           val end_plus_one = (Config.board_count + 1).toString
-          Config.load(List(), Map("b" -> end_plus_one)) should ===(
+          Config.parse(List(), Map("b" -> end_plus_one)) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.board_count}"
@@ -89,33 +88,31 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--b & --f") {
         it("returns Left if neither --b nor --f are set") {
-          Config.load(List(), Map()) should ===(
+          Config.parse(List(), Map()) should ===(
             Left("Must define either --b or --f as board source")
           )
         }
 
         it("returns Left if both --b and --f are set") {
-          Config.load(List(), Map("b" -> "1", "f" -> "x")) should ===(
+          Config.parse(List(), Map("b" -> "1", "f" -> "x")) should ===(
             Left("Cannot define both --b and --f as board source; pick one")
           )
         }
 
         it("returns Left if both --f and --b are set") {
           val f = "src/main/resources/blinker.txt"
-          Config.load(List(), Map("f" -> f, "b" -> i)) should ===(
+          Config.parse(List(), Map("f" -> f, "b" -> num)) should ===(
             Left("Cannot define both --b and --f as board source; pick one")
           )
         }
       }
 
       it("returns a Right if --b and --t are set") {
-        Config.load(List(), Map("b" -> i, "t" -> "250")) should ===(
+        Config.parse(List(), Map("b" -> num, "t" -> "250")) should ===(
           Right(
-            Config.emptyConfig.copy(
-              board_source = BoardSource.BuiltIn,
-              board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
-              time_delta = 250
-            )
+            Config
+              .defaultConfig(BoardSource.BuiltIn(index))
+              .copy(time_delta = 250)
           )
         )
       }
@@ -123,67 +120,55 @@ class ConfigSpec extends FunSpec with Matchers {
       describe("--f") {
         it("returns a Right if --f is set") {
           val f = "src/main/resources/blinker.txt"
-          Config.load(List(), Map("f" -> f)) should ===(
-            Right(
-              Config.emptyConfig.copy(
-                board_source = BoardSource.File,
-                board_str = "-----\n--+--\n--+--\n--+--\n-----\n"
-              )
-            )
+          Config.parse(List(), Map("f" -> f)) should ===(
+            Right(Config.defaultConfig(BoardSource.File(f)))
           )
-        }
-
-        it("returns a Left if --f is not a file") {
-          val f = "src/main/resources/"
-          val msg = """java.io.FileNotFoundException: src/main/resources
-                      |(Is a directory)""".stripMargin.replaceAll("\n", " ")
-          Config.load(List(), Map("f" -> f)) should ===(Left(msg))
         }
       }
 
       describe("--t") {
         it("returns a Left if --t is not a number") {
-          Config.load(List(), Map("b" -> "1", "t" -> "foo")) should ===(
+          Config.parse(List(), Map("b" -> "1", "t" -> "foo")) should ===(
             Left("--t must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --t is 0") {
-          Config.load(List(), Map("b" -> "1", "t" -> "0")) should ===(
+          Config.parse(List(), Map("b" -> "1", "t" -> "0")) should ===(
             Left("--t must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --t is negative") {
-          Config.load(List(), Map("b" -> "1", "t" -> "-1")) should ===(
+          Config.parse(List(), Map("b" -> "1", "t" -> "-1")) should ===(
             Left("--t must be an integer between 1 and 4096")
           )
         }
       }
 
       it("returns a Right if --m and --w are set") {
-        val params = Map("b" -> i, "m" -> "0", "w" -> "1")
-        Config.load(List(), params) should ===(
+        val params = Map("b" -> num, "m" -> "0", "w" -> "1")
+        Config.parse(List(), params) should ===(
           Right(
-            Config.emptyConfig.copy(
-              board_source = BoardSource.BuiltIn,
-              board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
-              margin = 0,
-              width = 1
-            )
+            Config
+              .defaultConfig(BoardSource.BuiltIn(index))
+              .copy(
+                margin = 0,
+                width = 1
+              )
           )
         )
       }
 
       describe("--m") {
         it("returns a Left if --m is negative") {
-          Config.load(List(), Map("b" -> i, "m" -> "-1")) should ===(
+          Config.parse(List(), Map("b" -> num, "m" -> "-1")) should ===(
             Left("--m must be an integer between 0 and 4096")
           )
         }
 
         it("returns a Left if --m is not an integer") {
-          Config.load(List(), Map("b" -> i, "m" -> "foo")) should ===(
+          Config.parse(List(), Map("b" -> num, "m" -> "foo")) should ===(
             Left("--m must be an integer between 0 and 4096")
           )
         }
@@ -191,19 +176,19 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--w") {
         it("returns a Left if --w is not positive") {
-          Config.load(List(), Map("b" -> i, "w" -> "0")) should ===(
+          Config.parse(List(), Map("b" -> num, "w" -> "0")) should ===(
             Left("--w must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --w is negative") {
-          Config.load(List(), Map("b" -> i, "w" -> "-1")) should ===(
+          Config.parse(List(), Map("b" -> num, "w" -> "-1")) should ===(
             Left("--w must be an integer between 1 and 4096")
           )
         }
 
         it("returns a Left if --w is not an integer") {
-          Config.load(List(), Map("b" -> i, "w" -> "foo")) should ===(
+          Config.parse(List(), Map("b" -> num, "w" -> "foo")) should ===(
             Left("--w must be an integer between 1 and 4096")
           )
         }
@@ -211,21 +196,19 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--alive-color") {
         it("returns Left if bad format") {
-          val params = Map("b" -> i, "alive-color" -> "0,100,300,")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "alive-color" -> "0,100,300,")
+          Config.parse(List(), params) should ===(
             Left("--alive-color must be Int,Int,Int between 0-255")
           )
         }
 
         it("returns Right if good format") {
-          val params = Map("b" -> i, "alive-color" -> "0,100,255")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "alive-color" -> "0,100,255")
+          Config.parse(List(), params) should ===(
             Right(
-              Config.emptyConfig.copy(
-                board_source = BoardSource.BuiltIn,
-                board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
-                alive_color = (0, 100, 255)
-              )
+              Config
+                .defaultConfig(BoardSource.BuiltIn(index))
+                .copy(alive_color = (0, 100, 255))
             )
           )
         }
@@ -233,21 +216,19 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--dead-color") {
         it("returns Left if bad format") {
-          val params = Map("b" -> i, "dead-color" -> "0,100,300,")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "dead-color" -> "0,100,300,")
+          Config.parse(List(), params) should ===(
             Left("--dead-color must be Int,Int,Int between 0-255")
           )
         }
 
         it("returns Right if good format") {
-          val params = Map("b" -> i, "dead-color" -> "0,100,255")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "dead-color" -> "0,100,255")
+          Config.parse(List(), params) should ===(
             Right(
-              Config.emptyConfig.copy(
-                board_source = BoardSource.BuiltIn,
-                board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
-                dead_color = (0, 100, 255)
-              )
+              Config
+                .defaultConfig(BoardSource.BuiltIn(index))
+                .copy(dead_color = (0, 100, 255))
             )
           )
         }
@@ -255,21 +236,19 @@ class ConfigSpec extends FunSpec with Matchers {
 
       describe("--bg-color") {
         it("returns Left if bad format") {
-          val params = Map("b" -> i, "bg-color" -> "0,100,300,")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "bg-color" -> "0,100,300,")
+          Config.parse(List(), params) should ===(
             Left("--bg-color must be Int,Int,Int between 0-255")
           )
         }
 
         it("returns Right if good format") {
-          val params = Map("b" -> i, "bg-color" -> "0,100,255")
-          Config.load(List(), params) should ===(
+          val params = Map("b" -> num, "bg-color" -> "0,100,255")
+          Config.parse(List(), params) should ===(
             Right(
-              Config.emptyConfig.copy(
-                board_source = BoardSource.BuiltIn,
-                board_str = "-----\n--+--\n--+--\n--+--\n-----\n",
-                bg_color = (0, 100, 255)
-              )
+              Config
+                .defaultConfig(BoardSource.BuiltIn(index))
+                .copy(bg_color = (0, 100, 255))
             )
           )
         }

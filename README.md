@@ -70,8 +70,11 @@ TODO
 ----
 
 - Move board_str out of Config class;  then load can be pure.
-    - File loading (built-in or file) can be done in IO monad
-- Get rid of animation timer and use recursive function with Talk.delay instead
-    - impossible to overflow; no need to throttle
-    - guarantees only one thread writing to gfx canvas at a time
-    - new grid gets passed to next recursive call; no need for mutable var or MVar
+    - File loading (built-in or file) can be done in Task monad
+- graphicsContext  methods must be called from the JavaFx thread once the gc is attached to a scene
+    - Make all gc calls happen from AnimationTimer.handle.  Grid can be computed on another thread.
+    - Use AtomicReference[Option[Grid]] as channel between AnimationTimer (consumer) and Stepper (producer)
+    - Grid computed by Stepper(gridRef).step(grid): Task[Unit] non-terminating recursive function
+        - only steps if gridRef is empty
+        - sets gridRef to next grid
+    - AnimationTimer.handle only draws if gridRef is non-empty (consumes grid if gridRef non-empty)
