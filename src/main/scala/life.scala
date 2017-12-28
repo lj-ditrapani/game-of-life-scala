@@ -1,12 +1,15 @@
 package info.ditrapani.gameoflife
 
 import config.Config
+import java.util.concurrent.atomic.AtomicReference
 import terminator.Terminator
+import monix.execution.Scheduler.Implicits.global
 
 class Life(
     javaFxApp: JavaFxApp,
     sceneDrawerFactory: SceneDrawerFactory,
-    animatorFactory: AnimatorFactory
+    animatorFactory: AnimatorFactory,
+    stepperFactory: StepperFactory
 ) {
 
   def main(params: Params, terminator: Terminator): Unit =
@@ -24,6 +27,9 @@ class Life(
   def startGfx(grid: Grid, config: Config): Unit = {
     val boxDrawer = javaFxApp.createSceneAndBoxDrawer(grid, config)
     val sceneDrawer = sceneDrawerFactory(config, boxDrawer)
-    animatorFactory(grid, config, sceneDrawer).run()
+    val gridRef = new AtomicReference[Option[Grid]](Some(grid))
+    animatorFactory(gridRef, sceneDrawer).run()
+    stepperFactory(gridRef, config.time_delta).run(grid, Infinity).runAsync
+    (): Unit
   }
 }

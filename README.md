@@ -85,3 +85,6 @@ TODO
 - organize/revisit packages
 - remove unused dependencies
 - some tests in life-spec maybe move to diff package/file
+- get a consistent naming scheme (camel vs snake case)
+- animatorFactory can become just an animate function that creates the animationTimer and runs it.
+- see ^ if applies to others
