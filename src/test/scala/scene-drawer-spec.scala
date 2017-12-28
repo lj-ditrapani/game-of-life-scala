@@ -1,7 +1,7 @@
 package info.ditrapani.gameoflife
 
 import config.{BoardSource, Config}
-import org.scalatest.{EitherValues, FunSpec, Matchers}
+import org.scalatest.EitherValues
 import scalafx.scene.paint.Color
 
 final case class Draw(color: Color, x: Int, y: Int, width: Int)
@@ -16,7 +16,7 @@ class BoxDrawerFake extends BoxDrawer {
   def getDraws(): List[Draw] = buffer.reverse
 }
 
-class SceneDrawerSpec extends FunSpec with Matchers with EitherValues {
+class SceneDrawerSpec extends Spec with EitherValues {
   describe("drawScene") {
     it("draws the cells as a series of boxes") {
       val config: Config = Config.defaultConfig(BoardSource.BuiltIn(1))

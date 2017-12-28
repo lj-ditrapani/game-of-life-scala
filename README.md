@@ -69,8 +69,6 @@ Check for dependency updates
 TODO
 ----
 
-- Move `board_str` out of Config class;  then load can be pure.
-    - File loading (built-in or file) can be done in Task monad
 - graphicsContext  methods must be called from the JavaFx thread once the gc is attached to a scene
     - Make all gc calls happen from AnimationTimer.handle.  Grid can be computed on another thread.
     - Use AtomicReference[Option[Grid]] as channel between AnimationTimer (consumer) and Stepper (producer)
@@ -78,3 +76,9 @@ TODO
         - only steps if gridRef is empty
         - sets gridRef to next grid
     - AnimationTimer.handle only draws if gridRef is non-empty (consumes grid if gridRef non-empty)
+- Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
+    - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
+    - each frame, they swap
+    - First, test performance diff; then implement if worth it
+- break up into smaller classes; seperate files
+- organize/revisit packages

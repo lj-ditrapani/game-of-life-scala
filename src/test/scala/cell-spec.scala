@@ -1,8 +1,6 @@
 package info.ditrapani.gameoflife
 
-import org.scalatest.{FunSpec, Matchers}
-
-class CellSpec extends FunSpec with Matchers {
+class CellSpec extends Spec {
   describe("Cell Class") {
     describe("alive") {
       it("returns false if dead") {

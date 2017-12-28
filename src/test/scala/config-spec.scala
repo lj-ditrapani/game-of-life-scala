@@ -1,8 +1,8 @@
 package info.ditrapani.gameoflife.config
 
-import org.scalatest.{FunSpec, Matchers}
+import info.ditrapani.gameoflife.Spec
 
-class ConfigSpec extends FunSpec with Matchers {
+class ConfigSpec extends Spec {
   describe("Config Class") {
     it("has instance values") {
       val source = BoardSource.BuiltIn(1)

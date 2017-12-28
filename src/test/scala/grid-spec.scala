@@ -1,8 +1,6 @@
 package info.ditrapani.gameoflife
 
-import org.scalatest.{FunSpec, Matchers}
-
-class GridSpec extends FunSpec with Matchers {
+class GridSpec extends Spec {
   describe("Grid Class") {
     describe("toString") {
       it("returns a string representation") {

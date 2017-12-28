@@ -5,9 +5,7 @@ import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
-import config.{BoardSource, Config}
-
-import scala.util.{Try, Success, Failure}
+import config.Config
 
 class Params(parameters: JFXApp.Parameters) {
   def unnamed: List[String] = parameters.unnamed.toList
@@ -33,24 +31,11 @@ object Life extends JFXApp {
       println(s"    ${index + 1}  $name")
     }
     println("\n")
-    System.exit(0)
+    system.exit(0)
   }
 
-  def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
-    board_source match {
-      case BoardSource.BuiltIn(index) =>
-        val name = Config.boards(index)
-        val input_stream = getClass.getResourceAsStream(s"/$name.txt")
-        Right(scala.io.Source.fromInputStream(input_stream).mkString)
-      case BoardSource.File(path) =>
-        Try(scala.io.Source.fromFile(path).mkString) match {
-          case Failure(exception) => Left(exception.toString())
-          case Success(board_str) => Right(board_str)
-        }
-    }
-
   def runGame(config: Config): Either[String, Unit] =
-    getBoardStr(config.board_source).flatMap { board_str =>
+    BoardLoader.getBoardStr(config.board_source).flatMap { board_str =>
       Grid.build(board_str).map(startGfx(_, config))
     }
 
