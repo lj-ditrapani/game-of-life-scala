@@ -2,7 +2,7 @@ package info.ditrapani.gameoflife
 
 import config.Config
 import scalafx.application.JFXApp
-import scalafx.scene.canvas.{Canvas, GraphicsContext}
+import scalafx.scene.canvas.Canvas
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
@@ -11,6 +11,14 @@ import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 class Params(parameters: JFXApp.Parameters) {
   def unnamed: List[String] = parameters.unnamed.toList
   def named: Map[String, String] = Map(parameters.named.toSeq: _*)
+}
+
+class CanvasDimensions(grid: Grid, config: Config) {
+  private val cell_width = config.width
+  private val cell_margin = config.margin
+
+  def height(): Double = ((cell_width + cell_margin) * grid.height + cell_margin).toDouble
+  def width(): Double = ((cell_width + cell_margin) * grid.width + cell_margin).toDouble
 }
 
 object Life extends JFXApp {
@@ -31,8 +39,8 @@ object Life extends JFXApp {
   def startGfx(grid: Grid, config: Config): Unit = {
     var curr_grid = grid
     val time_delta: Long = config.time_delta * 1000000L
-    val gc = makeGfxContext(grid, config)
-    val sceneDrawer = new SceneDrawer(config, new BoxDrawerImpl(gc))
+    val boxDrawer = createSceneAndBoxDrawer(grid, config)
+    val sceneDrawer = new SceneDrawer(config, boxDrawer)
 
     sceneDrawer.drawScene(curr_grid)
 
@@ -47,11 +55,10 @@ object Life extends JFXApp {
     }).start()
   }
 
-  def makeGfxContext(grid: Grid, config: Config): GraphicsContext = {
-    val width = config.width
-    val margin = config.margin
-    val canvas_height = ((width + margin) * grid.height + margin).toDouble
-    val canvas_width = ((width + margin) * grid.width + margin).toDouble
+  def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
+    val canvasDimensions = new CanvasDimensions(grid, config)
+    val canvas_height = canvasDimensions.height()
+    val canvas_width = canvasDimensions.width()
     val canvas = new Canvas(canvas_width, canvas_height)
     val gc = canvas.graphicsContext2D
     canvas.translateX = 0
@@ -68,6 +75,6 @@ object Life extends JFXApp {
       }
     }
 
-    gc
+    new BoxDrawerImpl(gc)
   }
 }
