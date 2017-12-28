@@ -82,3 +82,4 @@ TODO
     - First, test performance diff; then implement if worth it
 - break up into smaller classes; seperate files
 - organize/revisit packages
+- remove unused dependencies
