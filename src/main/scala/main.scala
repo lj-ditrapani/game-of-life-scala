@@ -28,10 +28,11 @@ object Main extends JFXApp with JavaFxApp {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def startGfx(grid: Grid, config: Config): Unit = {
-    var curr_grid = grid
-    val time_delta: Long = config.time_delta * 1000000L
     val boxDrawer = createSceneAndBoxDrawer(grid, config)
     val sceneDrawer = new SceneDrawer(config, boxDrawer)
+
+    var curr_grid = grid
+    val time_delta: Long = config.time_delta * 1000000L
 
     sceneDrawer.drawScene(curr_grid)
 
