@@ -1,11 +1,12 @@
 package info.ditrapani.gameoflife
 
+import config.Config
 import scalafx.application.JFXApp
 import scalafx.scene.canvas.{Canvas, GraphicsContext}
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.animation.AnimationTimer
-import config.Config
+import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
 class Params(parameters: JFXApp.Parameters) {
   def unnamed: List[String] = parameters.unnamed.toList
@@ -13,26 +14,13 @@ class Params(parameters: JFXApp.Parameters) {
 }
 
 object Life extends JFXApp {
+  val terminator = new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl)
   val params = new Params(parameters)
   Config
     .parse(params.unnamed, params.named)
     .map(runGame)
     .left
-    .foreach(printErrorHelpAndExit)
-
-  def printErrorHelpAndExit(message: String): Unit = {
-    if (message != "Printing help text...") {
-      println(s"\n[ERROR] $message\n")
-    }
-    val input_stream = getClass.getResourceAsStream("/help.txt")
-    val help_text = scala.io.Source.fromInputStream(input_stream).mkString
-    println(help_text)
-    for ((name, index) <- Config.boards.zipWithIndex) {
-      println(s"    ${index + 1}  $name")
-    }
-    println("\n")
-    system.exit(0)
-  }
+    .foreach(terminator.printErrorHelpAndExit)
 
   def runGame(config: Config): Either[String, Unit] =
     BoardLoader.getBoardStr(config.board_source).flatMap { board_str =>
