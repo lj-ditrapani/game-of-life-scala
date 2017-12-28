@@ -69,6 +69,7 @@ Check for dependency updates
 TODO
 ----
 
+- test the untested testable code (Life, AnimatorImpl)
 - graphicsContext  methods must be called from the JavaFx thread once the gc is attached to a scene
     - Make all gc calls happen from AnimationTimer.handle.  Grid can be computed on another thread.
     - Use AtomicReference[Option[Grid]] as channel between AnimationTimer (consumer) and Stepper (producer)
@@ -83,3 +84,4 @@ TODO
 - break up into smaller classes; seperate files
 - organize/revisit packages
 - remove unused dependencies
+- some tests in life-spec maybe move to diff package/file

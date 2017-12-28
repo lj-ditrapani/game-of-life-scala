@@ -18,6 +18,16 @@ class BoxDrawerImpl(gc: GraphicsContext) extends BoxDrawer {
   }
 }
 
+trait SceneDrawerFactory {
+  def apply(config: Config, boxDrawer: BoxDrawer): SceneDrawer
+}
+
+object SceneDrawerFactoryImpl extends SceneDrawerFactory {
+
+  def apply(config: Config, boxDrawer: BoxDrawer): SceneDrawer =
+    new SceneDrawer(config, boxDrawer)
+}
+
 class SceneDrawer(config: Config, boxDrawer: BoxDrawer) {
   private def tupleRgb = Function.tupled[Int, Int, Int, Color](Color.rgb)
   private val alive_color = tupleRgb(config.alive_color)

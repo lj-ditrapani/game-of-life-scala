@@ -3,10 +3,13 @@ package info.ditrapani.gameoflife
 import config.Config
 import scalafx.application.JFXApp
 import scalafx.scene.canvas.Canvas
-import scalafx.scene.Scene
 import scalafx.scene.paint.Color
-import scalafx.animation.AnimationTimer
+import scalafx.scene.Scene
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
+
+trait JavaFxApp {
+  def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer
+}
 
 class Params(parameters: JFXApp.Parameters) {
   def unnamed: List[String] = parameters.unnamed.toList
@@ -22,30 +25,10 @@ class CanvasDimensions(grid: Grid, config: Config) {
 }
 
 object Main extends JFXApp with JavaFxApp {
-  val terminator = new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl)
-  val params = new Params(parameters)
-  new Life(this).main(params, terminator)
-
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  def startGfx(grid: Grid, config: Config): Unit = {
-    val boxDrawer = createSceneAndBoxDrawer(grid, config)
-    val sceneDrawer = new SceneDrawer(config, boxDrawer)
-
-    var curr_grid = grid
-    val time_delta: Long = config.time_delta * 1000000L
-
-    sceneDrawer.drawScene(curr_grid)
-
-    var last_time = System.nanoTime()
-
-    AnimationTimer(curr_time => {
-      if (curr_time - last_time > time_delta) {
-        last_time = curr_time
-        curr_grid = curr_grid.next
-        sceneDrawer.drawScene(curr_grid)
-      }
-    }).start()
-  }
+  new Life(this, SceneDrawerFactoryImpl, AnimatorFactoryImpl).main(
+    new Params(parameters),
+    new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl)
+  )
 
   def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
     val canvasDimensions = new CanvasDimensions(grid, config)

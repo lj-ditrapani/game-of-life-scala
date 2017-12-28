@@ -3,7 +3,11 @@ package info.ditrapani.gameoflife
 import config.Config
 import terminator.Terminator
 
-class Life(javaFxApp: JavaFxApp) {
+class Life(
+    javaFxApp: JavaFxApp,
+    sceneDrawerFactory: SceneDrawerFactory,
+    animatorFactory: AnimatorFactory
+) {
 
   def main(params: Params, terminator: Terminator): Unit =
     Config
@@ -14,10 +18,12 @@ class Life(javaFxApp: JavaFxApp) {
 
   def runGame(config: Config): Either[String, Unit] =
     BoardLoader.getBoardStr(config.board_source).flatMap { board_str =>
-      Grid.build(board_str).map(javaFxApp.startGfx(_, config))
+      Grid.build(board_str).map(startGfx(_, config))
     }
-}
 
-trait JavaFxApp {
-  def startGfx(grid: Grid, config: Config): Unit
+  def startGfx(grid: Grid, config: Config): Unit = {
+    val boxDrawer = javaFxApp.createSceneAndBoxDrawer(grid, config)
+    val sceneDrawer = sceneDrawerFactory(config, boxDrawer)
+    animatorFactory(grid, config, sceneDrawer).run()
+  }
 }
