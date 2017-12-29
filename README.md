@@ -50,8 +50,8 @@ Generate a standalone jar for java 8
 
 The jar will be placed in target/scala-x.xx/game-of-life-assembly-x.x.x.jar
 
-Style check; I'm using both wartremover and scalastyle.
-The compile task also runs wartremover.
+Static analysis:  I'm using scalafmt, wartremover and scalastyle.
+The compile task also runs scalafmt & wartremover.
 
     sbt test            # or anything that runs compile
     sbt scalastyle
@@ -69,22 +69,14 @@ Check for dependency updates
 TODO
 ----
 
-- test the untested testable code (Life, AnimatorImpl)
-- graphicsContext  methods must be called from the JavaFx thread once the gc is attached to a scene
-    - Make all gc calls happen from AnimationTimer.handle.  Grid can be computed on another thread.
-    - Use AtomicReference[Option[Grid]] as channel between AnimationTimer (consumer) and Stepper (producer)
-    - Grid computed by Stepper(gridRef).step(grid): Task[Unit] non-terminating recursive function
-        - only steps if gridRef is empty
-        - sets gridRef to next grid
-    - AnimationTimer.handle only draws if gridRef is non-empty (consumes grid if gridRef non-empty)
-- Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
-    - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
-    - each frame, they swap
-    - First, test performance diff; then implement if worth it
+- test the untested testable code (Life, AnimatorImpl, Stepper)
 - break up into smaller classes; seperate files
 - organize/revisit packages
 - remove unused dependencies
 - some tests in life-spec maybe move to diff package/file
 - get a consistent naming scheme (camel vs snake case)
-- animatorFactory can become just an animate function that creates the animationTimer and runs it.
-- see ^ if applies to others
+- update download standalone jar
+- Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
+    - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
+    - each frame, they swap
+    - First, test performance diff; then implement if worth it

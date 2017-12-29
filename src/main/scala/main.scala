@@ -25,10 +25,8 @@ class CanvasDimensions(grid: Grid, config: Config) {
 }
 
 object Main extends JFXApp with JavaFxApp {
-  new Life(this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl).main(
-    new Params(parameters),
-    new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl),
-  )
+  new Life(BoardLoaderImpl, this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl)
+    .main(new Params(parameters), new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl))
 
   def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
     val canvasDimensions = new CanvasDimensions(grid, config)

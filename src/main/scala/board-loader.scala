@@ -4,7 +4,11 @@ import config.{BoardSource, Config}
 
 import scala.util.{Try, Success, Failure}
 
-object BoardLoader {
+trait BoardLoader {
+  def getBoardStr(board_source: BoardSource.Source): Either[String, String]
+}
+
+object BoardLoaderImpl extends BoardLoader {
 
   def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
     board_source match {

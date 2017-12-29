@@ -6,6 +6,7 @@ import terminator.Terminator
 import monix.execution.Scheduler.Implicits.global
 
 class Life(
+    boardLoader: BoardLoader,
     javaFxApp: JavaFxApp,
     sceneDrawerFactory: SceneDrawerFactory,
     animatorFactory: AnimatorFactory,
@@ -15,12 +16,12 @@ class Life(
   def main(params: Params, terminator: Terminator): Unit =
     Config
       .parse(params.unnamed, params.named)
-      .map(runGame)
+      .flatMap(runGame)
       .left
       .foreach(terminator.printErrorHelpAndExit)
 
   def runGame(config: Config): Either[String, Unit] =
-    BoardLoader.getBoardStr(config.board_source).flatMap { board_str =>
+    boardLoader.getBoardStr(config.board_source).flatMap { board_str =>
       Grid.build(board_str).map(startGfx(_, config))
     }
 
