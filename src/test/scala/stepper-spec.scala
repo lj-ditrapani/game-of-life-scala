@@ -42,7 +42,7 @@ class CountSpec extends Spec {
 }
 
 class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
-  describe("loop") {
+  describe("run") {
     describe("when the gridRef is not empty") {
       describe("and the iterations is 1") {
         it("does not compute the next grid, but leaves the grid as is") {
@@ -50,7 +50,7 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
           val gridRef = new AtomicReference[Option[Grid]](Some(grid))
           val stepper = StepperFactoryImpl(gridRef, 0)
           stepper
-            .loop(grid, Count(1))
+            .run(grid, Count(1))
             .runAsync
             .map(unused => {
               gridRef.get().value.toString shouldBe "---\n-+-\n---"
@@ -66,7 +66,7 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
           val gridRef = new AtomicReference[Option[Grid]](None)
           val stepper = StepperFactoryImpl(gridRef, 0)
           stepper
-            .loop(grid, Count(2))
+            .run(grid, Count(2))
             .runAsync
             .map(unused => {
               gridRef.get().value.toString shouldBe "++++\n++++\n++++"

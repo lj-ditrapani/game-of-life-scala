@@ -32,12 +32,8 @@ object StepperFactoryImpl extends StepperFactory {
 
 class Stepper(gridRef: AtomicReference[Option[Grid]], time_delta: Int) {
 
-  def run(initialGrid: Grid, iterations: Iterations): Task[Unit] = {
-    loop(initialGrid, iterations)
-  }
-
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def loop(grid: Grid, iterations: Iterations): Task[Unit] =
+  def run(grid: Grid, iterations: Iterations): Task[Unit] =
     if (iterations.isDone()) {
       Task.now((): Unit)
     } else {
@@ -50,7 +46,7 @@ class Stepper(gridRef: AtomicReference[Option[Grid]], time_delta: Int) {
           grid2
       }
       Task
-        .defer(loop(next_grid, iterations.decrement()))
+        .defer(run(next_grid, iterations.decrement()))
         .delayExecution(new FiniteDuration(time_delta.toLong, TimeUnit.MILLISECONDS))
     }
 }
