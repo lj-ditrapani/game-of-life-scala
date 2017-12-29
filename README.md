@@ -69,7 +69,7 @@ Check for dependency updates
 TODO
 ----
 
-- test the untested testable code (Life, AnimatorImpl, Stepper)
+- test the untested testable code (AnimatorImpl, Stepper)
 - break up into smaller classes; seperate files
 - organize/revisit packages
 - remove unused dependencies
@@ -80,3 +80,4 @@ TODO
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap
     - First, test performance diff; then implement if worth it
+- refactor Life specs
