@@ -5,7 +5,7 @@ Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 Download Standalone jar
 -----------------------
 
-<http://ditrapani.info/resources/game-of-life-assembly-1.4.0.jar>
+<http://ditrapani.info/resources/game-of-life-assembly-1.4.1.jar>
 
 
 Usage

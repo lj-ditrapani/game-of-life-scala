@@ -23,12 +23,7 @@ trait Animator {
 class AnimatorImpl(gridRef: AtomicReference[Option[Grid]], sceneDrawer: SceneDrawer)
     extends AnimationTimer
     with Animator {
-  gridRef.getAndSet(None) match {
-    case Some(grid) =>
-      sceneDrawer.drawScene(grid)
-    case None =>
-      assert(!gridRef.get().isEmpty)
-  }
+  assert(!gridRef.get().isEmpty)
 
   def handle(curr_time: Long): Unit = {
     val maybeGrid = gridRef.getAndSet(None)

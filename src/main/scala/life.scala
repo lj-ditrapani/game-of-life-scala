@@ -29,8 +29,8 @@ class Life(
     val boxDrawer = javaFxApp.createSceneAndBoxDrawer(grid, config)
     val sceneDrawer = sceneDrawerFactory(config, boxDrawer)
     val gridRef = new AtomicReference[Option[Grid]](Some(grid))
-    animatorFactory(gridRef, sceneDrawer).run()
     stepperFactory(gridRef, config.time_delta).run(grid, Infinity).runAsync
+    animatorFactory(gridRef, sceneDrawer).run()
     (): Unit
   }
 }
