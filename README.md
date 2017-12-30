@@ -4,7 +4,7 @@ Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 Download Standalone jar
 -----------------------
 
-<http://ditrapani.info/resources/game-of-life-assembly-1.2.0.jar>
+<http://ditrapani.info/resources/game-of-life-assembly-1.4.0.jar>
 
 
 Usage
@@ -70,7 +70,6 @@ TODO
 ----
 
 - organize/revisit packages
-- some tests in life-spec maybe move to diff package/file
 - get a consistent naming scheme (camel vs snake case)
 - update download standalone jar
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
@@ -78,3 +77,5 @@ TODO
     - each frame, they swap
     - First, test performance diff; then implement if worth it
 - refactor Life specs
+- add an animated png or gif of game running to readme (with invocation to reproduce)
+- tag version before refactor
