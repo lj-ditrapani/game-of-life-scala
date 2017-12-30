@@ -69,10 +69,7 @@ Check for dependency updates
 TODO
 ----
 
-- test the untested testable code (AnimatorImpl, Stepper)
-- break up into smaller classes; seperate files
 - organize/revisit packages
-- remove unused dependencies
 - some tests in life-spec maybe move to diff package/file
 - get a consistent naming scheme (camel vs snake case)
 - update download standalone jar
