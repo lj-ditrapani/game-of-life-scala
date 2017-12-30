@@ -1,5 +1,6 @@
 Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
 
+![glider.gif](http://ditrapani.info/resources/glider.gif)
 
 Download Standalone jar
 -----------------------
@@ -66,16 +67,25 @@ Check for dependency updates
     sbt dependencyUpdates
 
 
+Example
+-------
+
+![box.gif](http://ditrapani.info/resources/box.gif)
+
+Invocation:
+
+```
+java -jar game-of-life-assembly-x.x.x.jar --m=1 --w=4 --b=5 --t=250 \
+    --bg-color=50,0,0 --alive-color=255,180,210 --dead-color=0,50,130
+```
+
 TODO
 ----
 
 - organize/revisit packages
 - get a consistent naming scheme (camel vs snake case)
-- update download standalone jar
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap
     - First, test performance diff; then implement if worth it
 - refactor Life specs
-- add an animated png or gif of game running to readme (with invocation to reproduce)
-- tag version before refactor
