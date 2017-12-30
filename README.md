@@ -90,6 +90,15 @@ java -jar game-of-life-assembly-x.x.x.jar --m=1 --w=4 --b=5 --t=250 \
 ```
 
 
+Making GIF Animations
+---------------------
+
+To make the gif animations, I used byzanz:
+
+    sudo apt-get install byzanz
+    byzanz-record --duration=20 --x=0 --y=0 --width=500 --height=300 out.gif
+
+
 TODO
 ----
 
