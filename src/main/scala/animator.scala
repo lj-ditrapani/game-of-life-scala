@@ -16,12 +16,14 @@ object AnimatorFactoryImpl extends AnimatorFactory {
 
 trait Animator {
   def run(): Unit
+
+  def handle(curr_time: Long): Unit
 }
 
 class AnimatorImpl(gridRef: AtomicReference[Option[Grid]], sceneDrawer: SceneDrawer)
     extends AnimationTimer
     with Animator {
-  gridRef.get() match {
+  gridRef.getAndSet(None) match {
     case Some(grid) =>
       sceneDrawer.drawScene(grid)
     case None =>

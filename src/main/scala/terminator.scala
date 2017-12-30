@@ -15,7 +15,7 @@ trait HelpTextLoader {
 }
 
 object PrinterImpl extends Printer {
-  def print(s: String): Unit = println(s)
+  def print(s: String): Unit = println(s) // scalastyle:ignore
 }
 
 object KillerImpl extends Killer {
