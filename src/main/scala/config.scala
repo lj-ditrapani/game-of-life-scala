@@ -23,7 +23,7 @@ object Config {
   type IfConfig = Either[String, Config]
   type IfInt = Either[String, Int]
 
-  val boards = Vector(
+  val boards: Vector[String] = Vector(
     "acorn",
     "blinkers",
     "blinker",
@@ -35,7 +35,7 @@ object Config {
     "pentadecathlon",
     "r-pentomino"
   )
-  val board_count = Config.boards.size
+  val board_count: Int = Config.boards.size
 
   def defaultConfig(boardSource: BoardSource.Source): Config =
     Config(
@@ -50,13 +50,13 @@ object Config {
 
   def parse(help_params: List[String], params: Map[String, String]): IfConfig =
     if (help_params.exists(_ == "--help")) {
-      Left("Printing help text...")
+      Left[String, Config]("Printing help text...")
     } else if (!help_params.isEmpty) {
-      Left(s"Unknown command line parameter in ${help_params}")
+      Left[String, Config](s"Unknown command line parameter in ${help_params}")
     } else {
       getSource(params).flatMap {
         case (source, new_params) => {
-          val zero: IfConfig = Right(Config.defaultConfig(source))
+          val zero: IfConfig = Right[String, Config](Config.defaultConfig(source))
           new_params.foldLeft(zero) { (if_config, kv) =>
             if_config.flatMap { addParams(kv, _) }
           }
@@ -64,17 +64,19 @@ object Config {
       }
     }
 
+  type SourceWithParams = (BoardSource.Source, Map[String, String])
+
   private def getSource(
       params: Map[String, String]
   ): Either[String, (BoardSource.Source, Map[String, String])] = {
     if (params.contains("b") && params.contains("f")) {
-      Left("Cannot define both --b and --f as board source; pick one")
+      Left[String, SourceWithParams]("Cannot define both --b and --f as board source; pick one")
     } else if (params.contains("b")) {
       parseBuiltIn(params("b")).map(i => (BoardSource.BuiltIn(i), params - "b"))
     } else if (params.contains("f")) {
-      Right((BoardSource.File(params("f")), params - "f"))
+      Right[String, SourceWithParams]((BoardSource.File(params("f")), params - "f"))
     } else {
-      Left("Must define either --b or --f as board source")
+      Left[String, SourceWithParams]("Must define either --b or --f as board source")
     }
   }
 
@@ -87,7 +89,7 @@ object Config {
       case "alive-color" => handleAliveColor(value, config)
       case "dead-color" => handleDeadColor(value, config)
       case "bg-color" => handleBgColor(value, config)
-      case _ => Left(s"Unknown command line parameter '--${flag}'")
+      case _ => Left[String, Config](s"Unknown command line parameter '--${flag}'")
     }
   }
 
@@ -144,11 +146,11 @@ object Config {
   }
 
   def parseInt(value: String, lower: Int, upper: Int, prefix: String): IfInt = {
-    val left = Left(prefix + s" must be an integer between $lower and $upper")
+    val left = Left[String, Int](prefix + s" must be an integer between $lower and $upper")
     def onSuccess(num: Int): IfInt =
       (num < lower || num > upper) match {
         case true => left
-        case false => Right(num)
+        case false => Right[String, Int](num)
       }
 
     Try(value.toInt) match {

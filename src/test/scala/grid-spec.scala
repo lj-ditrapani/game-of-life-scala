@@ -1,5 +1,6 @@
 package info.ditrapani.gameoflife
 
+@SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class GridSpec extends Spec {
   describe("Grid Class") {
     describe("toString") {

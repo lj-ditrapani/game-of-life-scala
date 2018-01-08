@@ -64,21 +64,21 @@ class CellSpec extends Spec {
   describe("Cell Object") {
     describe("get(Boolean)") {
       it("returns Cell.living if true") {
-        Cell.get(true) should be(Cell.living)
+        Cell.fromBool(true) should be(Cell.living)
       }
 
       it("returns Cell.dead if false") {
-        Cell.get(false) should be(Cell.dead)
+        Cell.fromBool(false) should be(Cell.dead)
       }
     }
 
     describe("get(Char)") {
       it("returns the dead cell if char is -") {
-        Cell.get('-') should be(Cell.dead)
+        Cell.fromChar('-') should be(Cell.dead)
       }
 
       it("returns the alive cell if char is +") {
-        Cell.get('+') should be(Cell.living)
+        Cell.fromChar('+') should be(Cell.living)
       }
     }
 

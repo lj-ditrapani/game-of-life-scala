@@ -1,8 +1,8 @@
 package info.ditrapani.gameoflife
 
 final case class Grid(val cells: Vector[Vector[Cell]]) {
-  val height = cells.size
-  val width = cells.headOption.map(_.size).getOrElse(0)
+  val height: Int = cells.size
+  val width: Int = cells.headOption.map(_.size).getOrElse(0)
 
   override def toString: String =
     cells
@@ -45,7 +45,7 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
 object Grid {
 
   // format: off
-  val neighbor_deltas = List(
+  private val neighbor_deltas = List(
     (-1, -1), (-1, 0), (-1, 1),
     ( 0, -1),          ( 0, 1),
     ( 1, -1), ( 1, 0), ( 1, 1)
@@ -55,14 +55,14 @@ object Grid {
   def build(str: String): Either[String, Grid] = {
     val lines = str.split("\n").to[Vector]
     if ((lines.size < 3) || (width(lines) < 3)) {
-      Left("Board must be at least 3 x 3")
+      Left[String, Grid]("Board must be at least 3 x 3")
     } else if (!lineLengthsMatch(lines)) {
-      Left("Board line lengths don't match")
+      Left[String, Grid]("Board line lengths don't match")
     } else if (!onlyPlusesAndDashes(lines)) {
-      Left("Board must contain only + and - characters")
+      Left[String, Grid]("Board must contain only + and - characters")
     } else {
-      val cells = lines.map(_.map(Cell.get(_)).to[Vector])
-      Right(Grid(cells))
+      val cells = lines.map(_.map(Cell.fromChar(_)).to[Vector])
+      Right[String, Grid](Grid(cells))
     }
   }
 
@@ -84,22 +84,22 @@ final case class Cell(alive: Boolean) {
 
   def next(neighbor_count: Int): Cell = neighbor_count match {
     case x if x < 2 => Cell.dead
-    case 2 => Cell.get(alive)
+    case 2 => Cell.fromBool(alive)
     case 3 => Cell.living
     case _ => Cell.dead
   }
 }
 
 object Cell {
-  val living = Cell(true)
+  val living: Cell = Cell(true)
 
-  val dead = Cell(false)
+  val dead: Cell = Cell(false)
 
-  def get(alive: Boolean): Cell = {
+  def fromBool(alive: Boolean): Cell = {
     if (alive) Cell.living else Cell.dead
   }
 
-  def get(char: Char): Cell = {
-    get(char == '+')
+  def fromChar(char: Char): Cell = {
+    fromBool(char == '+')
   }
 }

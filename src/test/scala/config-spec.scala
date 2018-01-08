@@ -2,6 +2,7 @@ package info.ditrapani.gameoflife.config
 
 import info.ditrapani.gameoflife.Spec
 
+@SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class ConfigSpec extends Spec {
   describe("Config Class") {
     it("has instance values") {

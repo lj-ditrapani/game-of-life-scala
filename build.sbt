@@ -29,12 +29,8 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.4" % "test"
 )
 wartremoverWarnings ++= Warts.allBut(
-  Wart.Enumeration,
   Wart.Equals,
-  Wart.NonUnitStatements,
-  Wart.Nothing,
-  Wart.Overloading,
-  Wart.PublicInference
+  Wart.NonUnitStatements
 )
 
 scalafmtVersion in ThisBuild := "1.3.0"

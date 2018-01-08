@@ -10,6 +10,7 @@ import org.scalatest.EitherValues
 import org.scalatest.mockito.MockitoSugar
 import terminator.Terminator
 
+@SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class LifeSpec extends Spec with MockitoSugar with EitherValues {
   describe("main") {
     it("calls printErrorHelpAndExit when the Config.parse returns a Left") {

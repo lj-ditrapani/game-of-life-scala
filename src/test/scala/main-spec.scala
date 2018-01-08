@@ -9,7 +9,7 @@ import scala.collection.mutable.{Map => MutableMap}
 
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 class ParamsSpec extends Spec with MockitoSugar {
-  val parameters = mock[JFXApp.Parameters]
+  private val parameters = mock[JFXApp.Parameters]
 
   describe("unnamed") {
     it("converts the unnamed parameters from Seq to a List") {
@@ -30,7 +30,7 @@ class ParamsSpec extends Spec with MockitoSugar {
 
 class CanvasDimensionsSpec extends Spec {
 
-  val canvasDimensions = {
+  private val canvasDimensions = {
     val grid = Grid(
       Vector(
         Vector(Cell.living, Cell.dead, Cell.living),

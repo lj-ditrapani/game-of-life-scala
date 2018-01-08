@@ -2,6 +2,7 @@ package info.ditrapani.gameoflife
 
 import config.BoardSource
 
+@SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class BoardLoaderImplSpec extends Spec {
   val blinker_string = "-----\n--+--\n--+--\n--+--\n-----\n"
 

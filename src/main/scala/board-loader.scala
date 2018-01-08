@@ -15,11 +15,11 @@ object BoardLoaderImpl extends BoardLoader {
       case BoardSource.BuiltIn(index) =>
         val name = Config.boards(index)
         val input_stream = getClass.getResourceAsStream(s"/$name.txt")
-        Right(scala.io.Source.fromInputStream(input_stream).mkString)
+        Right[String, String](scala.io.Source.fromInputStream(input_stream).mkString)
       case BoardSource.File(path) =>
         Try(scala.io.Source.fromFile(path).mkString) match {
-          case Failure(exception) => Left(exception.toString())
-          case Success(board_str) => Right(board_str)
+          case Failure(exception) => Left[String, String](exception.toString())
+          case Success(board_str) => Right[String, String](board_str)
         }
     }
 }
