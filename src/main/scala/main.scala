@@ -1,10 +1,9 @@
 package info.ditrapani.gameoflife
 
-import cats.{Id, ~>}
 import config.Config
-import javafxinit.{JavaFXInit, JavaFXA, CreateCanvas, CreateGfxContext, SetStage, CreateBoxDrawer}
 import scalafx.application.JFXApp
-import scalafx.scene.canvas.{Canvas, GraphicsContext}
+import scalafx.scene.canvas.Canvas
+import scalafx.scene.paint.Color
 import scalafx.scene.Scene
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
@@ -17,43 +16,38 @@ class Params(parameters: JFXApp.Parameters) {
   def named: Map[String, String] = Map(parameters.named.toSeq: _*)
 }
 
-object Main extends JFXApp with JavaFxApp {
+class CanvasDimensions(grid: Grid, config: Config) {
+  private val cellWidth = config.width
+  private val cellMargin = config.margin
 
+  def height(): Double = ((cellWidth + cellMargin) * grid.height + cellMargin).toDouble
+  def width(): Double = ((cellWidth + cellMargin) * grid.width + cellMargin).toDouble
+}
+
+object Main extends JFXApp with JavaFxApp {
   new Life(BoardLoaderImpl, this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl)
     .main(new Params(parameters), new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl))
 
-  def createStageAndBoxDrawer(grid: Grid, config: Config): BoxDrawer =
-    JavaFXInit.createStageAndBoxDrawer(grid, config).foldMap(impureCompiler)
+  def createStageAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
+    val canvasDimensions = new CanvasDimensions(grid, config)
+    val canvasHeight = canvasDimensions.height()
+    val canvasWidth = canvasDimensions.width()
+    val canvas = new Canvas(canvasWidth, canvasHeight)
+    val gc = canvas.graphicsContext2D
+    canvas.translateX = 0
+    canvas.translateY = 0
 
-  @SuppressWarnings(Array("org.wartremover.warts.Null", "org.wartremover.warts.Var"))
-  private def impureCompiler: JavaFXA ~> Id =
-    new (JavaFXA ~> Id) {
+    val (r, g, b) = config.bgColor
+    gc.setFill(Color.rgb(r, g, b))
+    gc.fillRect(0, 0, canvasWidth, canvasHeight)
 
-      var canvas: Canvas = null
-      var gc: GraphicsContext = null
-
-      def apply[A](fa: JavaFXA[A]): Id[A] =
-        fa match {
-          case CreateCanvas(width, height) =>
-            canvas = new Canvas(width, height)
-            canvas.translateX = 0
-            canvas.translateY = 0
-            (): Unit
-          case CreateGfxContext(color, width, height) =>
-            gc = canvas.graphicsContext2D
-            gc.setFill(color)
-            gc.fillRect(0, 0, width, height)
-            (): Unit
-          case SetStage(w, h) =>
-            stage = new JFXApp.PrimaryStage {
-              title = "Game of Life by L. J. Di Trapani"
-              scene = new Scene(w.toDouble, h.toDouble) {
-                content = canvas
-              }
-            }
-            (): Unit
-          case CreateBoxDrawer =>
-            new BoxDrawerImpl(gc)
-        }
+    stage = new JFXApp.PrimaryStage {
+      title = "Game of Life by L. J. Di Trapani"
+      scene = new Scene(canvasWidth, canvasHeight) {
+        content = canvas
+      }
     }
+
+    new BoxDrawerImpl(gc)
+  }
 }

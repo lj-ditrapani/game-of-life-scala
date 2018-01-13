@@ -40,12 +40,12 @@ object Config {
   def defaultConfig(boardSource: BoardSource.Source): Config =
     Config(
       boardSource,
-      timeDelta = 500,
-      margin = 4,
-      width = 16,
-      aliveColor = (200, 220, 255),
-      deadColor = (90, 100, 130),
-      bgColor = (150, 170, 200)
+      500,
+      4,
+      16,
+      (200, 220, 255),
+      (90, 100, 130),
+      (150, 170, 200)
     )
 
   def parse(helpParams: List[String], params: Map[String, String]): IfConfig =
