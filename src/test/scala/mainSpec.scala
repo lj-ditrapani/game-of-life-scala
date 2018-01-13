@@ -1,36 +1,19 @@
 package info.ditrapani.gameoflife
 
 import config.{BoardSource, Config}
-import org.mockito.Mockito.when
+import java.util.concurrent.atomic.AtomicReference
+import monix.eval.Task
+import monix.execution.Scheduler
+import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
+import org.mockito.Mockito.{never, verify, when}
+import org.scalatest.EitherValues
 import org.scalatest.mockito.MockitoSugar
-import scalafx.application.JFXApp
+import scalafx.scene.paint.Color
+import terminator.Terminator
 
-import scala.collection.mutable.{Map => MutableMap}
+class CanvasConfigSpec extends Spec {
 
-@SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-class ParamsSpec extends Spec with MockitoSugar {
-  private val parameters = mock[JFXApp.Parameters]
-
-  describe("unnamed") {
-    it("converts the unnamed parameters from Seq to a List") {
-      when(parameters.unnamed).thenReturn(Seq("a", "b"))
-      val p = new Params(parameters)
-      p.unnamed shouldBe List("a", "b")
-    }
-  }
-
-  describe("named") {
-    it("converts the named parameters from a pontential mutable Map to an immutable Map") {
-      when(parameters.named).thenReturn(MutableMap("a" -> "1", "b" -> "2"))
-      val p = new Params(parameters)
-      p.named shouldBe Map("a" -> "1", "b" -> "2")
-    }
-  }
-}
-
-class CanvasDimensionsSpec extends Spec {
-
-  private val canvasDimensions = {
+  private val canvasConfig = {
     val grid = Grid(
       Vector(
         Vector(Cell.living, Cell.dead, Cell.living),
@@ -38,18 +21,139 @@ class CanvasDimensionsSpec extends Spec {
       )
     )
     val config = Config.defaultConfig(BoardSource.BuiltIn(2))
-    new CanvasDimensions(grid, config)
+    new CanvasConfig(grid, config)
   }
 
   describe("height") {
     it("returns the canvas height") {
-      canvasDimensions.height shouldBe 44.0 // (16.0 + 4.0) * 2 + 4.0
+      canvasConfig.height shouldBe 44.0 // (16.0 + 4.0) * 2 + 4.0
     }
   }
 
   describe("width") {
     it("returns the canvas width") {
-      canvasDimensions.width shouldBe 64.0 // (16.0 + 4.0) * 3 + 4.0
+      canvasConfig.width shouldBe 64.0 // (16.0 + 4.0) * 3 + 4.0
+    }
+  }
+
+  describe("color") {
+    it("returns the canvas background color") {
+      canvasConfig.color shouldBe Color.rgb(150, 170, 200)
+    }
+  }
+}
+
+@SuppressWarnings(Array("org.wartremover.warts.Nothing"))
+class MainSpec extends Spec with MockitoSugar with EitherValues {
+  describe("main") {
+    it("calls printErrorHelpAndExit when the Config.parse returns a Left") {
+      object BoardLoaderFake extends BoardLoader {
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+          Right("---\n--+\n+++")
+      }
+
+      val javaFxApp = mock[JavaFxApp]
+      val sceneDrawerFactory = mock[SceneDrawerFactory]
+      val animatorFactory = mock[AnimatorFactory]
+      val stepperFactory = mock[StepperFactory]
+      val params = mock[Params]
+      val terminator = mock[Terminator]
+
+      when(params.unnamed).thenReturn(List[String]("--help"))
+      when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+
+      val life = new Main(
+        BoardLoaderFake,
+        javaFxApp,
+        sceneDrawerFactory,
+        animatorFactory,
+        stepperFactory
+      )
+      life.main(params, terminator)
+      verify(terminator).printErrorHelpAndExit("Printing help text...")
+    }
+
+    it("calls printErrorHelpAndExit when the boardLoader returns a Left") {
+      object BoardLoaderFake extends BoardLoader {
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+          Left("Fire!")
+      }
+
+      val javaFxApp = mock[JavaFxApp]
+      val sceneDrawerFactory = mock[SceneDrawerFactory]
+      val animatorFactory = mock[AnimatorFactory]
+      val stepperFactory = mock[StepperFactory]
+      val params = mock[Params]
+      val terminator = mock[Terminator]
+
+      when(params.unnamed).thenReturn(List[String]())
+      when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+
+      val life = new Main(
+        BoardLoaderFake,
+        javaFxApp,
+        sceneDrawerFactory,
+        animatorFactory,
+        stepperFactory
+      )
+      life.main(params, terminator)
+      verify(terminator).printErrorHelpAndExit("Fire!")
+    }
+
+    it("calls a bunch of functions") {
+      val boardStr = "---\n--+\n+++"
+
+      object BoardLoaderFake extends BoardLoader {
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+          Right(boardStr)
+      }
+
+      val javaFxApp = mock[JavaFxApp]
+      val sceneDrawerFactory = mock[SceneDrawerFactory]
+      val animatorFactory = mock[AnimatorFactory]
+      val stepperFactory = mock[StepperFactory]
+      val params = mock[Params]
+      val terminator = mock[Terminator]
+
+      val width = 64.0
+      val height = 64.0
+      val color = Color.rgb(150, 170, 200)
+
+      val grid = Grid.build(boardStr).right.value
+      val config = Config.defaultConfig(BoardSource.BuiltIn(0))
+      val boxDrawer = mock[BoxDrawer]
+      val sceneDrawer = mock[SceneDrawer]
+      val animator = mock[Animator]
+      val stepper = mock[Stepper]
+      val task = mock[Task[Unit]]
+
+      when(params.unnamed).thenReturn(List[String]())
+      when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+      when(javaFxApp.init(width, height, color)).thenReturn(boxDrawer)
+      when(sceneDrawerFactory.apply(config, boxDrawer)).thenReturn(sceneDrawer)
+      when(animatorFactory.apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer)))
+        .thenReturn(animator)
+      when(stepperFactory.apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta)))
+        .thenReturn(stepper)
+      when(stepper.run(grid, Infinity)).thenReturn(task)
+
+      val life = new Main(
+        BoardLoaderFake,
+        javaFxApp,
+        sceneDrawerFactory,
+        animatorFactory,
+        stepperFactory
+      )
+      life.main(params, terminator)
+      verify(params).unnamed
+      verify(params).named
+      verify(javaFxApp).init(width, height, color)
+      verify(sceneDrawerFactory).apply(config, boxDrawer)
+      verify(animatorFactory).apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer))
+      verify(stepperFactory).apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta))
+      verify(stepper).run(grid, Infinity)
+      verify(task).runAsync(any[Scheduler])
+      verify(terminator, never()).printErrorHelpAndExit(anyString)
     }
   }
 }
