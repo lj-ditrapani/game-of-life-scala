@@ -3,7 +3,7 @@ package info.ditrapani.gameoflife
 final case class Cell(alive: Boolean) {
   def toChar: Char = if (alive) '+' else '-'
 
-  def next(neighbor_count: Int): Cell = neighbor_count match {
+  def next(neighborCount: Int): Cell = neighborCount match {
     case x if x < 2 => Cell.dead
     case 2 => Cell.fromBool(alive)
     case 3 => Cell.living

@@ -17,13 +17,13 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
       case `size` => 0
       case x2 => x2
     }
-    def isAlive(neighbor_delta: (Int, Int)): Boolean = {
-      val (row_delta, column_delta) = neighbor_delta
-      val new_row = offset(row, row_delta, height)
-      val new_column = offset(column, column_delta, width)
-      cells(new_row)(new_column).alive
+    def isAlive(neighborDelta: (Int, Int)): Boolean = {
+      val (rowDelta, columnDelta) = neighborDelta
+      val newRow = offset(row, rowDelta, height)
+      val newColumn = offset(column, columnDelta, width)
+      cells(newRow)(newColumn).alive
     }
-    Grid.neighbor_deltas.map(isAlive).count(x => x)
+    Grid.neighborDelta.map(isAlive).count(x => x)
   }
 
   def nextCell(row: Int, column: Int): Cell = {
@@ -31,21 +31,21 @@ final case class Grid(val cells: Vector[Vector[Cell]]) {
   }
 
   def next: Grid = {
-    val seq_of_vecs = for (row <- 0 until height) yield {
-      val cell_seq = for (column <- 0 until width) yield {
+    val seqOfVecs = for (row <- 0 until height) yield {
+      val cellSeq = for (column <- 0 until width) yield {
         nextCell(row, column)
       }
-      cell_seq.to[Vector]
+      cellSeq.to[Vector]
     }
-    val next_cells = seq_of_vecs.to[Vector]
-    Grid(next_cells)
+    val nextCells = seqOfVecs.to[Vector]
+    Grid(nextCells)
   }
 }
 
 object Grid {
 
   // format: off
-  private val neighbor_deltas = List(
+  private val neighborDelta = List(
     (-1, -1), (-1, 0), (-1, 1),
     ( 0, -1),          ( 0, 1),
     ( 1, -1), ( 1, 0), ( 1, 1)
@@ -70,8 +70,8 @@ object Grid {
     lines.headOption.map(_.size).getOrElse(0)
 
   def lineLengthsMatch(lines: Vector[String]): Boolean = {
-    val init_size = width(lines)
-    lines.map(_.size).forall(_ == init_size)
+    val initSize = width(lines)
+    lines.map(_.size).forall(_ == initSize)
   }
 
   def onlyPlusesAndDashes(lines: Vector[String]): Boolean = {

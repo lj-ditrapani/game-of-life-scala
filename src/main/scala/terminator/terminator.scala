@@ -25,8 +25,8 @@ object KillerImpl extends Killer {
 object HelpTextLoaderImpl extends HelpTextLoader {
 
   def load(): String = {
-    val input_stream = getClass.getResourceAsStream("/help.txt")
-    scala.io.Source.fromInputStream(input_stream).mkString
+    val inputStream = getClass.getResourceAsStream("/help.txt")
+    scala.io.Source.fromInputStream(inputStream).mkString
   }
 }
 
@@ -36,8 +36,8 @@ class Terminator(printer: Printer, killer: Killer, helpTextLoader: HelpTextLoade
     if (message != "Printing help text...") {
       printer.print(s"\n[ERROR] $message\n")
     }
-    val help_text = helpTextLoader.load()
-    printer.print(help_text)
+    val helpText = helpTextLoader.load()
+    printer.print(helpText)
     for ((name, index) <- Config.boards.zipWithIndex) {
       printer.print(s"    ${index + 1}  $name")
     }

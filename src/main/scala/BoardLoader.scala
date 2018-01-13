@@ -5,13 +5,13 @@ import config.{BoardSource, Config}
 import scala.util.{Try, Success, Failure}
 
 trait BoardLoader {
-  def getBoardStr(board_source: BoardSource.Source): Either[String, String]
+  def getBoardStr(boardSource: BoardSource.Source): Either[String, String]
 }
 
 object BoardLoaderImpl extends BoardLoader {
 
-  def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
-    board_source match {
+  def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+    boardSource match {
       case BoardSource.BuiltIn(index) =>
         val name = Config.boards(index)
         val input_stream = getClass.getResourceAsStream(s"/$name.txt")

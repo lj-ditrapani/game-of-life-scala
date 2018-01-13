@@ -23,12 +23,12 @@ class CellSpec extends Spec {
     }
 
     describe("next") {
-      def run_tests(base_cell: Cell, tests: List[(Int, Cell)]): Unit = {
+      def runTests(baseCell: Cell, tests: List[(Int, Cell)]): Unit = {
         for (test <- tests) {
-          val (count, expected_cell) = test
-          val state = if (expected_cell.alive) "living" else "dead"
-          it(s"returns the $state Cell if neighbor_count == $count") {
-            base_cell.next(count) should be(expected_cell)
+          val (count, expectedCell) = test
+          val state = if (expectedCell.alive) "living" else "dead"
+          it(s"returns the $state Cell if neighborCount == $count") {
+            baseCell.next(count) should be(expectedCell)
           }
         }
       }
@@ -43,7 +43,7 @@ class CellSpec extends Spec {
           (5 -> Cell.dead)
         )
 
-        run_tests(Cell.living, tests)
+        runTests(Cell.living, tests)
       }
 
       describe("when cell is dead,") {
@@ -56,7 +56,7 @@ class CellSpec extends Spec {
           (5 -> Cell.dead)
         )
 
-        run_tests(Cell.dead, tests)
+        runTests(Cell.dead, tests)
       }
     }
   }

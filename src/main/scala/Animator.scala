@@ -17,7 +17,7 @@ object AnimatorFactoryImpl extends AnimatorFactory {
 trait Animator {
   def run(): Unit
 
-  def handle(curr_time: Long): Unit
+  def handle(currTime: Long): Unit
 }
 
 class AnimatorImpl(gridRef: AtomicReference[Option[Grid]], sceneDrawer: SceneDrawer)
@@ -25,7 +25,7 @@ class AnimatorImpl(gridRef: AtomicReference[Option[Grid]], sceneDrawer: SceneDra
     with Animator {
   assert(!gridRef.get().isEmpty)
 
-  def handle(curr_time: Long): Unit = {
+  def handle(currTime: Long): Unit = {
     val maybeGrid = gridRef.getAndSet(None)
     maybeGrid match {
       case None => (): Unit

@@ -21,23 +21,23 @@ final case class Count(i: Int) extends Iterations {
 }
 
 trait StepperFactory {
-  def apply(gridRef: AtomicReference[Option[Grid]], time_delta: Int): Stepper
+  def apply(gridRef: AtomicReference[Option[Grid]], timeDelta: Int): Stepper
 }
 
 object StepperFactoryImpl extends StepperFactory {
 
-  def apply(gridRef: AtomicReference[Option[Grid]], time_delta: Int): Stepper =
-    new Stepper(gridRef, time_delta)
+  def apply(gridRef: AtomicReference[Option[Grid]], timeDelta: Int): Stepper =
+    new Stepper(gridRef, timeDelta)
 }
 
-class Stepper(gridRef: AtomicReference[Option[Grid]], time_delta: Int) {
+class Stepper(gridRef: AtomicReference[Option[Grid]], timeDelta: Int) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def run(grid: Grid, iterations: Iterations): Task[Unit] =
     if (iterations.isDone()) {
       Task.now((): Unit)
     } else {
-      val next_grid = gridRef.get() match {
+      val nextGrid = gridRef.get() match {
         case Some(_) =>
           grid
         case None =>
@@ -46,7 +46,7 @@ class Stepper(gridRef: AtomicReference[Option[Grid]], time_delta: Int) {
           grid2
       }
       Task
-        .defer(run(next_grid, iterations.decrement()))
-        .delayExecution(new FiniteDuration(time_delta.toLong, TimeUnit.MILLISECONDS))
+        .defer(run(nextGrid, iterations.decrement()))
+        .delayExecution(new FiniteDuration(timeDelta.toLong, TimeUnit.MILLISECONDS))
     }
 }

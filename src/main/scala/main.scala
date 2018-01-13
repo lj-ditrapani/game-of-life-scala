@@ -8,7 +8,7 @@ import scalafx.scene.Scene
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
 trait JavaFxApp {
-  def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer
+  def createStageAndBoxDrawer(grid: Grid, config: Config): BoxDrawer
 }
 
 class Params(parameters: JFXApp.Parameters) {
@@ -17,33 +17,33 @@ class Params(parameters: JFXApp.Parameters) {
 }
 
 class CanvasDimensions(grid: Grid, config: Config) {
-  private val cell_width = config.width
-  private val cell_margin = config.margin
+  private val cellWidth = config.width
+  private val cellMargin = config.margin
 
-  def height(): Double = ((cell_width + cell_margin) * grid.height + cell_margin).toDouble
-  def width(): Double = ((cell_width + cell_margin) * grid.width + cell_margin).toDouble
+  def height(): Double = ((cellWidth + cellMargin) * grid.height + cellMargin).toDouble
+  def width(): Double = ((cellWidth + cellMargin) * grid.width + cellMargin).toDouble
 }
 
 object Main extends JFXApp with JavaFxApp {
   new Life(BoardLoaderImpl, this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl)
     .main(new Params(parameters), new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl))
 
-  def createSceneAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
+  def createStageAndBoxDrawer(grid: Grid, config: Config): BoxDrawer = {
     val canvasDimensions = new CanvasDimensions(grid, config)
-    val canvas_height = canvasDimensions.height()
-    val canvas_width = canvasDimensions.width()
-    val canvas = new Canvas(canvas_width, canvas_height)
+    val canvasHeight = canvasDimensions.height()
+    val canvasWidth = canvasDimensions.width()
+    val canvas = new Canvas(canvasWidth, canvasHeight)
     val gc = canvas.graphicsContext2D
     canvas.translateX = 0
     canvas.translateY = 0
 
-    val (r, g, b) = config.bg_color
+    val (r, g, b) = config.bgColor
     gc.setFill(Color.rgb(r, g, b))
-    gc.fillRect(0, 0, canvas_width, canvas_height)
+    gc.fillRect(0, 0, canvasWidth, canvasHeight)
 
     stage = new JFXApp.PrimaryStage {
       title = "Game of Life by L. J. Di Trapani"
-      scene = new Scene(canvas_width, canvas_height) {
+      scene = new Scene(canvasWidth, canvasHeight) {
         content = canvas
       }
     }

@@ -4,14 +4,14 @@ import config.BoardSource
 
 @SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class BoardLoaderImplSpec extends Spec {
-  val blinker_string = "-----\n--+--\n--+--\n--+--\n-----\n"
+  val blinkerString = "-----\n--+--\n--+--\n--+--\n-----\n"
 
   describe("getBoardStr") {
     describe("when given a BuiltIn BoardSource") {
       it("loads the built-in board") {
         BoardLoaderImpl
           .getBoardStr(BoardSource.BuiltIn(2))
-          .shouldBe(Right(blinker_string))
+          .shouldBe(Right(blinkerString))
       }
     }
 
@@ -28,7 +28,7 @@ class BoardLoaderImplSpec extends Spec {
         it("loads the board from file") {
           BoardLoaderImpl
             .getBoardStr(BoardSource.File("src/main/resources/blinker.txt"))
-            .shouldBe(Right(blinker_string))
+            .shouldBe(Right(blinkerString))
         }
       }
     }

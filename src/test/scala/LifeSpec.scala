@@ -15,7 +15,7 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
   describe("main") {
     it("calls printErrorHelpAndExit when the Config.parse returns a Left") {
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
           Right("---\n--+\n+++")
       }
 
@@ -42,7 +42,7 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
 
     it("calls printErrorHelpAndExit when the boardLoader returns a Left") {
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
           Left("Fire!")
       }
 
@@ -68,11 +68,11 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
     }
 
     it("calls a bunch of functions") {
-      val board_str = "---\n--+\n+++"
+      val boardStr = "---\n--+\n+++"
 
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(board_source: BoardSource.Source): Either[String, String] =
-          Right(board_str)
+        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+          Right(boardStr)
       }
 
       val javaFxApp = mock[JavaFxApp]
@@ -82,7 +82,7 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
       val params = mock[Params]
       val terminator = mock[Terminator]
 
-      val grid = Grid.build(board_str).right.value
+      val grid = Grid.build(boardStr).right.value
       val config = Config.defaultConfig(BoardSource.BuiltIn(0))
       val boxDrawer = mock[BoxDrawer]
       val sceneDrawer = mock[SceneDrawer]
@@ -92,11 +92,11 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
 
       when(params.unnamed).thenReturn(List[String]())
       when(params.named).thenReturn(Map[String, String]("b" -> "1"))
-      when(javaFxApp.createSceneAndBoxDrawer(grid, config)).thenReturn(boxDrawer)
+      when(javaFxApp.createStageAndBoxDrawer(grid, config)).thenReturn(boxDrawer)
       when(sceneDrawerFactory.apply(config, boxDrawer)).thenReturn(sceneDrawer)
       when(animatorFactory.apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer)))
         .thenReturn(animator)
-      when(stepperFactory.apply(any[AtomicReference[Option[Grid]]], meq(config.time_delta)))
+      when(stepperFactory.apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta)))
         .thenReturn(stepper)
       when(stepper.run(grid, Infinity)).thenReturn(task)
 
@@ -110,10 +110,10 @@ class LifeSpec extends Spec with MockitoSugar with EitherValues {
       life.main(params, terminator)
       verify(params).unnamed
       verify(params).named
-      verify(javaFxApp).createSceneAndBoxDrawer(grid, config)
+      verify(javaFxApp).createStageAndBoxDrawer(grid, config)
       verify(sceneDrawerFactory).apply(config, boxDrawer)
       verify(animatorFactory).apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer))
-      verify(stepperFactory).apply(any[AtomicReference[Option[Grid]]], meq(config.time_delta))
+      verify(stepperFactory).apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta))
       verify(stepper).run(grid, Infinity)
       verify(task).runAsync(any[Scheduler])
       verify(terminator, never()).printErrorHelpAndExit(anyString)

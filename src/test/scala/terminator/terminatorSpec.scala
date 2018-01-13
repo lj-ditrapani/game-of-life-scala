@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife.terminator
 
-import info.ditrapani.gameoflife.config.Config.board_count
+import info.ditrapani.gameoflife.config.Config.boardCount
 import info.ditrapani.gameoflife.Spec
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.{times, verify, when}
@@ -20,7 +20,7 @@ class TerminatorSpec extends Spec with MockitoSugar {
         verify(printer).print("help-text")
         verify(printer).print("    1  acorn")
         verify(printer).print("    2  blinkers")
-        verify(printer, times(board_count + 2)).print(anyString)
+        verify(printer, times(boardCount + 2)).print(anyString)
       }
     }
 
@@ -37,7 +37,7 @@ class TerminatorSpec extends Spec with MockitoSugar {
         verify(printer).print("help-text")
         verify(printer).print("    1  acorn")
         verify(printer).print("    2  blinkers")
-        verify(printer, times(board_count + 3)).print(anyString)
+        verify(printer, times(boardCount + 3)).print(anyString)
       }
     }
   }

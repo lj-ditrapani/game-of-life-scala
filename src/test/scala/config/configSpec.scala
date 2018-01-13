@@ -8,7 +8,7 @@ class ConfigSpec extends Spec {
     it("has instance values") {
       val source = BoardSource.BuiltIn(1)
       val config = Config.defaultConfig(source)
-      config.board_source shouldBe source
+      config.boardSource shouldBe source
     }
   }
 
@@ -25,7 +25,7 @@ class ConfigSpec extends Spec {
         }
       }
 
-      it("returns Left if unknown parameters found in help_params") {
+      it("returns Left if unknown parameters found in helpParams") {
         Config.parse(List("foo"), Map()) should ===(
           Left("Unknown command line parameter in List(foo)")
         )
@@ -42,7 +42,7 @@ class ConfigSpec extends Spec {
           Config.parse(List(), Map("b" -> "")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
-                s"${Config.board_count}"
+                s"${Config.boardCount}"
             )
           )
         }
@@ -51,7 +51,7 @@ class ConfigSpec extends Spec {
           Config.parse(List(), Map("b" -> "foo")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
-                s"${Config.board_count}"
+                s"${Config.boardCount}"
             )
           )
         }
@@ -68,20 +68,20 @@ class ConfigSpec extends Spec {
           Config.parse(List(), Map("b" -> "0")) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
-                s"${Config.board_count}"
+                s"${Config.boardCount}"
             )
           )
         }
 
         it(
           "returns Left if --b is specified with integer > " +
-            s"${Config.board_count}"
+            s"${Config.boardCount}"
         ) {
-          val end_plus_one = (Config.board_count + 1).toString
-          Config.parse(List(), Map("b" -> end_plus_one)) should ===(
+          val endPlusOne = (Config.boardCount + 1).toString
+          Config.parse(List(), Map("b" -> endPlusOne)) should ===(
             Left(
               "Invalid value for --b, must be an integer between 1 and " +
-                s"${Config.board_count}"
+                s"${Config.boardCount}"
             )
           )
         }
@@ -113,7 +113,7 @@ class ConfigSpec extends Spec {
           Right(
             Config
               .defaultConfig(BoardSource.BuiltIn(index))
-              .copy(time_delta = 250)
+              .copy(timeDelta = 250)
           )
         )
       }
@@ -209,7 +209,7 @@ class ConfigSpec extends Spec {
             Right(
               Config
                 .defaultConfig(BoardSource.BuiltIn(index))
-                .copy(alive_color = (0, 100, 255))
+                .copy(aliveColor = (0, 100, 255))
             )
           )
         }
@@ -229,7 +229,7 @@ class ConfigSpec extends Spec {
             Right(
               Config
                 .defaultConfig(BoardSource.BuiltIn(index))
-                .copy(dead_color = (0, 100, 255))
+                .copy(deadColor = (0, 100, 255))
             )
           )
         }
@@ -249,7 +249,7 @@ class ConfigSpec extends Spec {
             Right(
               Config
                 .defaultConfig(BoardSource.BuiltIn(index))
-                .copy(bg_color = (0, 100, 255))
+                .copy(bgColor = (0, 100, 255))
             )
           )
         }
@@ -261,7 +261,7 @@ class ConfigSpec extends Spec {
         "--bg-color must be Int,Int,Int between 0-255"
       )
 
-      val left_tests: List[(String, String)] = List(
+      val leftTests: List[(String, String)] = List(
         ("tuple has leading garbage", "hi1,10,100"),
         ("tuple has extra comma", "1,10,100,"),
         ("missing comma", "1,10 100"),
@@ -272,7 +272,7 @@ class ConfigSpec extends Spec {
         ("any values greater than 255", "1,2,256")
       )
 
-      for ((msg, str) <- left_tests) {
+      for ((msg, str) <- leftTests) {
         it(s"returns Left if ${msg}") {
           Config.handleColor(str, "bg") should be(left)
         }

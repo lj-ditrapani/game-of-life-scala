@@ -10,13 +10,13 @@ object BoardSource {
 }
 
 final case class Config(
-    board_source: BoardSource.Source,
-    time_delta: Int,
+    boardSource: BoardSource.Source,
+    timeDelta: Int,
     margin: Int,
     width: Int,
-    alive_color: (Int, Int, Int),
-    dead_color: (Int, Int, Int),
-    bg_color: (Int, Int, Int)
+    aliveColor: (Int, Int, Int),
+    deadColor: (Int, Int, Int),
+    bgColor: (Int, Int, Int)
 )
 
 object Config {
@@ -35,7 +35,7 @@ object Config {
     "pentadecathlon",
     "r-pentomino"
   )
-  val board_count: Int = Config.boards.size
+  val boardCount: Int = Config.boards.size
 
   def defaultConfig(boardSource: BoardSource.Source): Config =
     Config(
@@ -48,17 +48,17 @@ object Config {
       (150, 170, 200)
     )
 
-  def parse(help_params: List[String], params: Map[String, String]): IfConfig =
-    if (help_params.exists(_ == "--help")) {
+  def parse(helpParams: List[String], params: Map[String, String]): IfConfig =
+    if (helpParams.exists(_ == "--help")) {
       Left[String, Config]("Printing help text...")
-    } else if (!help_params.isEmpty) {
-      Left[String, Config](s"Unknown command line parameter in ${help_params}")
+    } else if (!helpParams.isEmpty) {
+      Left[String, Config](s"Unknown command line parameter in ${helpParams}")
     } else {
       getSource(params).flatMap {
-        case (source, new_params) => {
+        case (source, newParams) => {
           val zero: IfConfig = Right[String, Config](Config.defaultConfig(source))
-          new_params.foldLeft(zero) { (if_config, kv) =>
-            if_config.flatMap { addParams(kv, _) }
+          newParams.foldLeft(zero) { (ifConfig, kv) =>
+            ifConfig.flatMap { addParams(kv, _) }
           }
         }
       }
@@ -94,11 +94,11 @@ object Config {
   }
 
   private def parseBuiltIn(value: String): Either[String, Int] =
-    parseInt(value, 1, board_count, "Invalid value for --b,").map(_ - 1)
+    parseInt(value, 1, boardCount, "Invalid value for --b,").map(_ - 1)
 
   private def handleTimeDelta(value: String, config: Config): IfConfig =
     parseInt(value, 1, 4096, "--t").map { (i) =>
-      config.copy(time_delta = i)
+      config.copy(timeDelta = i)
     }
 
   private def handleMargin(value: String, config: Config): IfConfig =
@@ -113,22 +113,22 @@ object Config {
 
   private def handleAliveColor(value: String, config: Config): IfConfig =
     handleColor(value, "alive").map { color =>
-      config.copy(alive_color = color)
+      config.copy(aliveColor = color)
     }
 
   private def handleDeadColor(value: String, config: Config): IfConfig =
     handleColor(value, "dead").map { color =>
-      config.copy(dead_color = color)
+      config.copy(deadColor = color)
     }
 
   private def handleBgColor(value: String, config: Config): IfConfig =
     handleColor(value, "bg").map { color =>
-      config.copy(bg_color = color)
+      config.copy(bgColor = color)
     }
 
-  def handleColor(value: String, color_type: String): Either[String, (Int, Int, Int)] = {
+  def handleColor(value: String, colorType: String): Either[String, (Int, Int, Int)] = {
     val pattern = "^(\\d{1,3}),(\\d{1,3}),(\\d{1,3})$".r
-    val errorMessage = s"--$color_type-color must be Int,Int,Int between 0-255"
+    val errorMessage = s"--$colorType-color must be Int,Int,Int between 0-255"
 
     def processMatch(m: Match): Either[String, (Int, Int, Int)] =
       for {

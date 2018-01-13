@@ -30,31 +30,31 @@ object SceneDrawerFactoryImpl extends SceneDrawerFactory {
 
 class SceneDrawer(config: Config, boxDrawer: BoxDrawer) {
   private def tupleRgb = Function.tupled[Int, Int, Int, Color](Color.rgb)
-  private val alive_color = tupleRgb(config.alive_color)
-  private val dead_color = tupleRgb(config.dead_color)
+  private val aliveColor = tupleRgb(config.aliveColor)
+  private val deadColor = tupleRgb(config.deadColor)
   private val margin = config.margin
   private val width = config.width
 
   def drawScene(grid: Grid): Unit = yLoop(grid.cells, 0, margin)
 
   @tailrec
-  private def yLoop(rows: Vector[Vector[Cell]], row_index: Int, y: Int): Unit =
-    if (row_index == rows.size) {
+  private def yLoop(rows: Vector[Vector[Cell]], rowIndex: Int, y: Int): Unit =
+    if (rowIndex == rows.size) {
       (): Unit
     } else {
-      val row = rows(row_index)
+      val row = rows(rowIndex)
       xLoop(row, 0, y, margin)
-      yLoop(rows, row_index + 1, y + width + margin)
+      yLoop(rows, rowIndex + 1, y + width + margin)
     }
 
   @tailrec
-  private def xLoop(row: Vector[Cell], col_index: Int, y: Int, x: Int): Unit =
-    if (col_index == row.size) {
+  private def xLoop(row: Vector[Cell], colIndex: Int, y: Int, x: Int): Unit =
+    if (colIndex == row.size) {
       (): Unit
     } else {
-      val cell = row(col_index)
-      val color = if (cell.alive) alive_color else dead_color
+      val cell = row(colIndex)
+      val color = if (cell.alive) aliveColor else deadColor
       boxDrawer.draw(color, x, y, width)
-      xLoop(row, col_index + 1, y, x + width + margin)
+      xLoop(row, colIndex + 1, y, x + width + margin)
     }
 }
