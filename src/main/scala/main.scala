@@ -17,7 +17,7 @@ class Params(parameters: JFXApp.Parameters) {
   def named: Map[String, String] = Map(parameters.named.toSeq: _*)
 }
 
-object NewMain extends JFXApp with JavaFxApp {
+object Main extends JFXApp with JavaFxApp {
 
   new Life(BoardLoaderImpl, this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl)
     .main(new Params(parameters), new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl))
