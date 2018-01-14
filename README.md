@@ -102,7 +102,22 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
+- Config should return Result[A] = (Value(A) | Error(String) | Help
 - Try the free monad for the Main class
+
+```
+Effects
+-------
+Terminate(String) -> Unit
+
+LoadBoardString(config.boardSource) -> String
+InitializeJavaFX(width, height, color) -> BoxDrawer
+CreateSceneDrawer(config, boxDrawer) -> SceneDrawer
+StartStepper(AR gridRef, Int time delta) -> Unit
+StartAnimator(AR gridRef, sceneDrawer) -> Unit
+```
+
+- Use Task for effects; interpret free monad to Task and combine
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap
