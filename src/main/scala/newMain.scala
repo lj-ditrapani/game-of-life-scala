@@ -31,8 +31,8 @@ object NewMain {
   def runGame(config: Config): Effect[Unit] =
     for {
       eitherBoardStr <- loadBoard(config.boardSource)
-      x <- continue(eitherBoardStr, config)
-    } yield x
+      _ <- continue(eitherBoardStr, config)
+    } yield (): Unit
 
   def continue(eitherBoardStr: Either[String, String], config: Config): Effect[Unit] =
     eitherBoardStr match {

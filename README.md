@@ -102,12 +102,11 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
-- Test for free monad
 - Replace main with newMain if successful with free monad
     - Remove unneeded factories
     - BoardLoader doesn't need trait anymore?
-- Use EitherT[Effect, A] to eliminate double either unwrapping in main
 - Use Task for effects; interpret free monad to Task and combine
+- Use EitherT[Effect, A] to eliminate double either unwrapping in main
 - terminator should call close on javafx Application before exit (in place of exit?)?
 
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]

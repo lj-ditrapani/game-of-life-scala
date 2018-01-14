@@ -43,10 +43,122 @@ class CanvasConfigSpec extends Spec {
   }
 }
 
+import cats.{Id, ~>}
+import effects.EffectA
+import effects.{Help, Error, LoadBoard, InitJavaFx, CreateSceneDrawer, StartStepper, StartAnimator}
+import org.scalatest.EitherValues
+
+class NewMainSpec extends Spec with MockitoSugar with EitherValues {
+  private val boardStr = "---\n-+-\n+++"
+  private val grid = Grid.build(boardStr).right.value
+
+  class HelpCompiler extends (EffectA ~> Id) {
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
+    var helpCalled = false
+
+    def apply[A](fa: EffectA[A]): Id[A] =
+      fa match {
+        case Help =>
+          helpCalled = true
+          (): Unit
+        case _ =>
+          fail()
+      }
+  }
+
+  class ErrorCompiler extends (EffectA ~> Id) {
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
+    var errorCalled = false
+
+    def apply[A](fa: EffectA[A]): Id[A] =
+      fa match {
+        case Help =>
+          fail()
+        case Error(s) =>
+          s shouldBe "the error message"
+          errorCalled = true
+        case LoadBoard(boardSource) =>
+          boardSource shouldBe BuiltIn(0)
+          Left[String, String]("the error message")
+        case _ =>
+          fail()
+      }
+  }
+
+  class TestCompiler extends (EffectA ~> Id) {
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
+    var animatorCalled = false
+    private val boxDrawer = mock[BoxDrawer]
+    private val sceneDrawer = mock[SceneDrawer]
+
+    def apply[A](fa: EffectA[A]): Id[A] =
+      fa match {
+        case LoadBoard(boardSource) =>
+          boardSource shouldBe BuiltIn(0)
+          Right[String, String](boardStr)
+        case InitJavaFx(width, height, color) =>
+          width shouldBe 64.0
+          height shouldBe 64.0
+          color shouldBe Color.rgb(150, 170, 200)
+          boxDrawer
+        case CreateSceneDrawer(config, boxDrawerArg) =>
+          config shouldBe Config.defaultConfig(BuiltIn(0))
+          boxDrawerArg shouldBe boxDrawer
+          sceneDrawer
+        case StartStepper(gridRef, timeDelta, gridArg) =>
+          gridRef.get() shouldBe Some(gridArg)
+          timeDelta shouldBe 500
+          gridArg shouldBe grid
+          (): Unit
+        case StartAnimator(gridRef, sceneDrawerArg) =>
+          gridRef.get() shouldBe Some(grid)
+          sceneDrawerArg shouldBe sceneDrawer
+          animatorCalled = true
+        case _ =>
+          fail()
+      }
+  }
+
+  describe("main") {
+    describe("when --help is specified") {
+      it("runs the program") {
+        val params = mock[Params]
+        when(params.unnamed).thenReturn(List[String]("--help"))
+        when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+        val helpCompiler = new HelpCompiler
+        NewMain.main(params).foldMap(helpCompiler)
+        helpCompiler.helpCalled shouldBe true
+      }
+    }
+
+    describe("when the boardLoader returns an Error") {
+      it("terminates with an Error effect") {
+        val params = mock[Params]
+        when(params.unnamed).thenReturn(List[String]())
+        when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+        val errorCompiler = new ErrorCompiler
+        NewMain.main(params).foldMap(errorCompiler)
+        errorCompiler.errorCalled shouldBe true
+      }
+    }
+
+    describe("when running the happy path") {
+      it("goes through a bunch of effects in ordor") {
+        val params = mock[Params]
+        when(params.unnamed).thenReturn(List[String]())
+        when(params.named).thenReturn(Map[String, String]("b" -> "1"))
+        val testCompiler = new TestCompiler
+        NewMain.main(params).foldMap(testCompiler)
+        testCompiler.animatorCalled shouldBe true
+      }
+    }
+  }
+}
+
 @SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class MainSpec extends Spec with MockitoSugar with EitherValues {
   describe("main") {
-    it("calls printErrorHelpAndExit when the Config.parse returns a Left") {
+    it("calls terminator.help when the Config.parse returns a Help") {
       object BoardLoaderFake extends BoardLoader {
         def getBoardStr(boardSource: BoardSource): Either[String, String] =
           Right("---\n--+\n+++")
@@ -73,7 +185,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
       verify(terminator).help()
     }
 
-    it("calls printErrorHelpAndExit when the boardLoader returns a Left") {
+    it("calls terminator.error when the boardLoader returns an Error") {
       object BoardLoaderFake extends BoardLoader {
         def getBoardStr(boardSource: BoardSource): Either[String, String] =
           Left("Fire!")
