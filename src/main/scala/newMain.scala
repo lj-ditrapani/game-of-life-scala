@@ -55,7 +55,7 @@ object NewMain {
     for {
       boxDrawer <- initJavaFx(width, height, color)
       sceneDrawer <- createSceneDrawer(config, boxDrawer)
-      _ <- startStepper(gridRef, config.timeDelta)
+      _ <- startStepper(gridRef, config.timeDelta, grid)
       _ <- startAnimator(gridRef, sceneDrawer)
     } yield (): Unit
   }

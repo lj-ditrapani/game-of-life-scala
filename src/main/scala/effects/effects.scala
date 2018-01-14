@@ -1,7 +1,7 @@
 package info.ditrapani.gameoflife.effects
 
 import info.ditrapani.gameoflife.GridRef.GridRef
-import info.ditrapani.gameoflife.{BoxDrawer, SceneDrawer}
+import info.ditrapani.gameoflife.{BoxDrawer, Grid, SceneDrawer}
 import info.ditrapani.gameoflife.config.{BoardSource, Config}
 import javafx.scene.paint.Color
 
@@ -12,7 +12,7 @@ final case class LoadBoard(boardSource: BoardSource) extends EffectA[Either[Stri
 final case class InitJavaFx(width: Double, height: Double, color: Color) extends EffectA[BoxDrawer]
 final case class CreateSceneDrawer(config: Config, boxDrawer: BoxDrawer)
     extends EffectA[SceneDrawer]
-final case class StartStepper(gridRef: GridRef, timeDelta: Int) extends EffectA[Unit]
+final case class StartStepper(gridRef: GridRef, timeDelta: Int, grid: Grid) extends EffectA[Unit]
 final case class StartAnimator(gridRef: GridRef, sceneDrawer: SceneDrawer) extends EffectA[Unit]
 
 object Effects {
@@ -36,8 +36,8 @@ object Effects {
   def createSceneDrawer(config: Config, boxDrawer: BoxDrawer): Effect[SceneDrawer] =
     liftF[EffectA, SceneDrawer](CreateSceneDrawer(config, boxDrawer))
 
-  def startStepper(gridRef: GridRef, timeDelta: Int): Effect[Unit] =
-    liftF[EffectA, Unit](StartStepper(gridRef, timeDelta))
+  def startStepper(gridRef: GridRef, timeDelta: Int, grid: Grid): Effect[Unit] =
+    liftF[EffectA, Unit](StartStepper(gridRef, timeDelta, grid))
 
   def startAnimator(gridRef: GridRef, sceneDrawer: SceneDrawer): Effect[Unit] =
     liftF[EffectA, Unit](StartAnimator(gridRef, sceneDrawer))
