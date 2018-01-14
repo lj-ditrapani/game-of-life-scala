@@ -3,6 +3,11 @@ package info.ditrapani.gameoflife.config
 import scala.util.{Try, Success, Failure}
 import scala.util.matching.Regex.Match
 
+sealed abstract class Result[+A]
+final case class Go[A](value: A) extends Result[A]
+final case class Error(message: String) extends Result[Nothing]
+object Help extends Result[Nothing]
+
 sealed abstract class BoardSource
 final case class BuiltIn(index: Int) extends BoardSource
 final case class File(path: String) extends BoardSource
@@ -46,19 +51,22 @@ object Config {
       bgColor = (150, 170, 200)
     )
 
-  def parse(helpParams: List[String], params: Map[String, String]): IfConfig =
+  def parse(helpParams: List[String], params: Map[String, String]): Result[Config] =
     if (helpParams.exists(_ == "--help")) {
-      Left[String, Config]("Printing help text...")
+      Help
     } else if (!helpParams.isEmpty) {
-      Left[String, Config](s"Unknown command line parameter in ${helpParams}")
+      Error(s"Unknown command line parameter in ${helpParams}")
     } else {
-      getSource(params).flatMap {
+      (getSource(params).flatMap {
         case (source, newParams) => {
           val zero: IfConfig = Right[String, Config](Config.defaultConfig(source))
           newParams.foldLeft(zero) { (ifConfig, kv) =>
             ifConfig.flatMap { addParams(kv, _) }
           }
         }
+      }) match {
+        case Right(config) => Go(config)
+        case Left(s) => Error(s)
       }
     }
 

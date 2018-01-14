@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife
 
-import config.Config
+import config.{Config, Error, Go, Help}
 import java.util.concurrent.atomic.AtomicReference
 import monix.execution.Scheduler.Implicits.global
 import javafx.scene.paint.Color
@@ -24,11 +24,15 @@ class Main(
 ) {
 
   def main(params: Params, terminator: Terminator): Unit =
-    Config
-      .parse(params.unnamed, params.named)
-      .flatMap(runGame)
-      .left
-      .foreach(terminator.printErrorHelpAndExit)
+    Config.parse(params.unnamed, params.named) match {
+      case Help => terminator.help()
+      case Error(s) => terminator.error(s)
+      case Go(config) =>
+        runGame(config) match {
+          case Left(s) => terminator.error(s)
+          case Right(_) => (): Unit
+        }
+    }
 
   def runGame(config: Config): Either[String, Unit] =
     boardLoader.getBoardStr(config.boardSource).flatMap { boardStr =>
