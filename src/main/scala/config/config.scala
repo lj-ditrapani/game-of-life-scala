@@ -3,14 +3,12 @@ package info.ditrapani.gameoflife.config
 import scala.util.{Try, Success, Failure}
 import scala.util.matching.Regex.Match
 
-object BoardSource {
-  sealed abstract class Source
-  final case class BuiltIn(index: Int) extends Source
-  final case class File(path: String) extends Source
-}
+sealed abstract class BoardSource
+final case class BuiltIn(index: Int) extends BoardSource
+final case class File(path: String) extends BoardSource
 
 final case class Config(
-    boardSource: BoardSource.Source,
+    boardSource: BoardSource,
     timeDelta: Int,
     margin: Int,
     width: Int,
@@ -37,7 +35,7 @@ object Config {
   )
   val boardCount: Int = Config.boards.size
 
-  def defaultConfig(boardSource: BoardSource.Source): Config =
+  def defaultConfig(boardSource: BoardSource): Config =
     Config(
       boardSource,
       timeDelta = 500,
@@ -64,17 +62,17 @@ object Config {
       }
     }
 
-  type SourceWithParams = (BoardSource.Source, Map[String, String])
+  type SourceWithParams = (BoardSource, Map[String, String])
 
   private def getSource(
       params: Map[String, String]
-  ): Either[String, (BoardSource.Source, Map[String, String])] = {
+  ): Either[String, (BoardSource, Map[String, String])] = {
     if (params.contains("b") && params.contains("f")) {
       Left[String, SourceWithParams]("Cannot define both --b and --f as board source; pick one")
     } else if (params.contains("b")) {
-      parseBuiltIn(params("b")).map(i => (BoardSource.BuiltIn(i), params - "b"))
+      parseBuiltIn(params("b")).map(i => (BuiltIn(i), params - "b"))
     } else if (params.contains("f")) {
-      Right[String, SourceWithParams]((BoardSource.File(params("f")), params - "f"))
+      Right[String, SourceWithParams]((File(params("f")), params - "f"))
     } else {
       Left[String, SourceWithParams]("Must define either --b or --f as board source")
     }

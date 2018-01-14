@@ -102,8 +102,7 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
-- Try the free monad for the ...
-- organize/revisit packages
+- Try the free monad for the Main class
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap

@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife
 
-import config.BoardSource
+import config.{BuiltIn, File}
 
 @SuppressWarnings(Array("org.wartremover.warts.Nothing"))
 class BoardLoaderImplSpec extends Spec {
@@ -10,7 +10,7 @@ class BoardLoaderImplSpec extends Spec {
     describe("when given a BuiltIn BoardSource") {
       it("loads the built-in board") {
         BoardLoaderImpl
-          .getBoardStr(BoardSource.BuiltIn(2))
+          .getBoardStr(BuiltIn(2))
           .shouldBe(Right(blinkerString))
       }
     }
@@ -19,7 +19,7 @@ class BoardLoaderImplSpec extends Spec {
       describe("and the file does not exist") {
         it("returns a Left(exception)") {
           BoardLoaderImpl
-            .getBoardStr(BoardSource.File("src/main/resources/"))
+            .getBoardStr(File("src/main/resources/"))
             .shouldBe(Left("java.io.FileNotFoundException: src/main/resources (Is a directory)"))
         }
       }
@@ -27,7 +27,7 @@ class BoardLoaderImplSpec extends Spec {
       describe("and the file exist") {
         it("loads the board from file") {
           BoardLoaderImpl
-            .getBoardStr(BoardSource.File("src/main/resources/blinker.txt"))
+            .getBoardStr(File("src/main/resources/blinker.txt"))
             .shouldBe(Right(blinkerString))
         }
       }

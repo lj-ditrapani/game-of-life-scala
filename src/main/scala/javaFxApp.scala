@@ -7,14 +7,14 @@ import javafx.scene.{Group, Scene}
 import javafx.stage.Stage
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
-trait JavaFxInit {
-  def startApp(width: Double, height: Double, color: Color): BoxDrawer
-}
-
 class Params(parameters: Application.Parameters) {
   import scala.collection.JavaConverters._
   def unnamed: List[String] = parameters.getUnnamed.asScala.toList
   def named: Map[String, String] = parameters.getNamed.asScala.toMap
+}
+
+trait JavaFxInit {
+  def startApp(width: Double, height: Double, color: Color): BoxDrawer
 }
 
 class JavaFxInitImpl(stage: Stage) extends JavaFxInit {
@@ -38,11 +38,11 @@ class JavaFxInitImpl(stage: Stage) extends JavaFxInit {
   }
 }
 
-object NewMain {
-  def main(args: Array[String]): Unit = Application.launch(classOf[NewMain], args: _*)
+object JavaFxApp {
+  def main(args: Array[String]): Unit = Application.launch(classOf[JavaFxApp], args: _*)
 }
 
-class NewMain extends Application {
+class JavaFxApp extends Application {
   override def start(stage: Stage): Unit =
     new Main(
       BoardLoaderImpl,

@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife
 
-import config.{BoardSource, Config}
+import config.{BoardSource, BuiltIn, Config}
 import java.util.concurrent.atomic.AtomicReference
 import monix.eval.Task
 import monix.execution.Scheduler
@@ -20,7 +20,7 @@ class CanvasConfigSpec extends Spec {
         Vector(Cell.living, Cell.dead, Cell.dead)
       )
     )
-    val config = Config.defaultConfig(BoardSource.BuiltIn(2))
+    val config = Config.defaultConfig(BuiltIn(2))
     new CanvasConfig(grid, config)
   }
 
@@ -48,7 +48,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
   describe("main") {
     it("calls printErrorHelpAndExit when the Config.parse returns a Left") {
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+        def getBoardStr(boardSource: BoardSource): Either[String, String] =
           Right("---\n--+\n+++")
       }
 
@@ -75,7 +75,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
 
     it("calls printErrorHelpAndExit when the boardLoader returns a Left") {
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+        def getBoardStr(boardSource: BoardSource): Either[String, String] =
           Left("Fire!")
       }
 
@@ -104,7 +104,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
       val boardStr = "---\n--+\n+++"
 
       object BoardLoaderFake extends BoardLoader {
-        def getBoardStr(boardSource: BoardSource.Source): Either[String, String] =
+        def getBoardStr(boardSource: BoardSource): Either[String, String] =
           Right(boardStr)
       }
 
@@ -120,7 +120,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
       val color = Color.rgb(150, 170, 200)
 
       val grid = Grid.build(boardStr).right.value
-      val config = Config.defaultConfig(BoardSource.BuiltIn(0))
+      val config = Config.defaultConfig(BuiltIn(0))
       val boxDrawer = mock[BoxDrawer]
       val sceneDrawer = mock[SceneDrawer]
       val animator = mock[Animator]

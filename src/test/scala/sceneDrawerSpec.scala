@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife
 
-import config.{BoardSource, Config}
+import config.{BuiltIn, Config}
 import org.scalatest.EitherValues
 import javafx.scene.paint.Color
 
@@ -19,7 +19,7 @@ class BoxDrawerFake extends BoxDrawer {
 class SceneDrawerSpec extends Spec with EitherValues {
   describe("drawScene") {
     it("draws the cells as a series of boxes") {
-      val config: Config = Config.defaultConfig(BoardSource.BuiltIn(1))
+      val config: Config = Config.defaultConfig(BuiltIn(1))
       val boxDrawer = new BoxDrawerFake()
       val sceneDrawer = SceneDrawerFactoryImpl(config, boxDrawer)
       val grid = Grid.build("--+\n+--\n++-").right.value

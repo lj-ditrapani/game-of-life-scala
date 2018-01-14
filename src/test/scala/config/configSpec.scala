@@ -6,7 +6,7 @@ import info.ditrapani.gameoflife.Spec
 class ConfigSpec extends Spec {
   describe("Config Class") {
     it("has instance values") {
-      val source = BoardSource.BuiltIn(1)
+      val source = BuiltIn(1)
       val config = Config.defaultConfig(source)
       config.boardSource shouldBe source
     }
@@ -59,7 +59,7 @@ class ConfigSpec extends Spec {
         it("returns Right if --b is specified with integer") {
           Config.parse(List(), Map("b" -> num)) should ===(
             Right(
-              Config.defaultConfig(BoardSource.BuiltIn(index))
+              Config.defaultConfig(BuiltIn(index))
             )
           )
         }
@@ -112,7 +112,7 @@ class ConfigSpec extends Spec {
         Config.parse(List(), Map("b" -> num, "t" -> "250")) should ===(
           Right(
             Config
-              .defaultConfig(BoardSource.BuiltIn(index))
+              .defaultConfig(BuiltIn(index))
               .copy(timeDelta = 250)
           )
         )
@@ -122,7 +122,7 @@ class ConfigSpec extends Spec {
         it("returns a Right if --f is set") {
           val f = "src/main/resources/blinker.txt"
           Config.parse(List(), Map("f" -> f)) should ===(
-            Right(Config.defaultConfig(BoardSource.File(f)))
+            Right(Config.defaultConfig(File(f)))
           )
         }
       }
@@ -152,7 +152,7 @@ class ConfigSpec extends Spec {
         Config.parse(List(), params) should ===(
           Right(
             Config
-              .defaultConfig(BoardSource.BuiltIn(index))
+              .defaultConfig(BuiltIn(index))
               .copy(
                 margin = 0,
                 width = 1
@@ -208,7 +208,7 @@ class ConfigSpec extends Spec {
           Config.parse(List(), params) should ===(
             Right(
               Config
-                .defaultConfig(BoardSource.BuiltIn(index))
+                .defaultConfig(BuiltIn(index))
                 .copy(aliveColor = (0, 100, 255))
             )
           )
@@ -228,7 +228,7 @@ class ConfigSpec extends Spec {
           Config.parse(List(), params) should ===(
             Right(
               Config
-                .defaultConfig(BoardSource.BuiltIn(index))
+                .defaultConfig(BuiltIn(index))
                 .copy(deadColor = (0, 100, 255))
             )
           )
@@ -248,7 +248,7 @@ class ConfigSpec extends Spec {
           Config.parse(List(), params) should ===(
             Right(
               Config
-                .defaultConfig(BoardSource.BuiltIn(index))
+                .defaultConfig(BuiltIn(index))
                 .copy(bgColor = (0, 100, 255))
             )
           )
