@@ -18,55 +18,55 @@ class ConfigSpec extends Spec {
 
     describe("parse") {
       describe("--help") {
-        it("returns Left") {
+        it("returns Help") {
           Config.parse(List("--help"), Map()) should ===(
-            Left("Printing help text...")
+            Help
           )
         }
       }
 
-      it("returns Left if unknown parameters found in helpParams") {
+      it("returns Error if unknown parameters found in helpParams") {
         Config.parse(List("foo"), Map()) should ===(
-          Left("Unknown command line parameter in List(foo)")
+          Error("Unknown command line parameter in List(foo)")
         )
       }
 
-      it("returns Left if unknown parameters found in params") {
+      it("returns Error if unknown parameters found in params") {
         Config.parse(List(), Map("b" -> num, "a" -> "")) should ===(
-          Left("Unknown command line parameter '--a'")
+          Error("Unknown command line parameter '--a'")
         )
       }
 
       describe("--b") {
-        it("returns Left if --b is specified with empty string") {
+        it("returns Error if --b is specified with empty string") {
           Config.parse(List(), Map("b" -> "")) should ===(
-            Left(
+            Error(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.boardCount}"
             )
           )
         }
 
-        it("returns Left if --b is specified without integer") {
+        it("returns Error if --b is specified without integer") {
           Config.parse(List(), Map("b" -> "foo")) should ===(
-            Left(
+            Error(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.boardCount}"
             )
           )
         }
 
-        it("returns Right if --b is specified with integer") {
+        it("returns Go if --b is specified with integer") {
           Config.parse(List(), Map("b" -> num)) should ===(
-            Right(
+            Go(
               Config.defaultConfig(BuiltIn(index))
             )
           )
         }
 
-        it("returns Left if --b is specified with integer < 1") {
+        it("returns Error if --b is specified with integer < 1") {
           Config.parse(List(), Map("b" -> "0")) should ===(
-            Left(
+            Error(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.boardCount}"
             )
@@ -74,12 +74,12 @@ class ConfigSpec extends Spec {
         }
 
         it(
-          "returns Left if --b is specified with integer > " +
+          "returns Error if --b is specified with integer > " +
             s"${Config.boardCount}"
         ) {
           val endPlusOne = (Config.boardCount + 1).toString
           Config.parse(List(), Map("b" -> endPlusOne)) should ===(
-            Left(
+            Error(
               "Invalid value for --b, must be an integer between 1 and " +
                 s"${Config.boardCount}"
             )
@@ -88,29 +88,29 @@ class ConfigSpec extends Spec {
       }
 
       describe("--b & --f") {
-        it("returns Left if neither --b nor --f are set") {
+        it("returns Error if neither --b nor --f are set") {
           Config.parse(List(), Map()) should ===(
-            Left("Must define either --b or --f as board source")
+            Error("Must define either --b or --f as board source")
           )
         }
 
-        it("returns Left if both --b and --f are set") {
+        it("returns Error if both --b and --f are set") {
           Config.parse(List(), Map("b" -> "1", "f" -> "x")) should ===(
-            Left("Cannot define both --b and --f as board source; pick one")
+            Error("Cannot define both --b and --f as board source; pick one")
           )
         }
 
-        it("returns Left if both --f and --b are set") {
+        it("returns Error if both --f and --b are set") {
           val f = "src/main/resources/blinker.txt"
           Config.parse(List(), Map("f" -> f, "b" -> num)) should ===(
-            Left("Cannot define both --b and --f as board source; pick one")
+            Error("Cannot define both --b and --f as board source; pick one")
           )
         }
       }
 
-      it("returns a Right if --b and --t are set") {
+      it("returns a Go if --b and --t are set") {
         Config.parse(List(), Map("b" -> num, "t" -> "250")) should ===(
-          Right(
+          Go(
             Config
               .defaultConfig(BuiltIn(index))
               .copy(timeDelta = 250)
@@ -119,38 +119,38 @@ class ConfigSpec extends Spec {
       }
 
       describe("--f") {
-        it("returns a Right if --f is set") {
+        it("returns a Go if --f is set") {
           val f = "src/main/resources/blinker.txt"
           Config.parse(List(), Map("f" -> f)) should ===(
-            Right(Config.defaultConfig(File(f)))
+            Go(Config.defaultConfig(File(f)))
           )
         }
       }
 
       describe("--t") {
-        it("returns a Left if --t is not a number") {
+        it("returns a Error if --t is not a number") {
           Config.parse(List(), Map("b" -> "1", "t" -> "foo")) should ===(
-            Left("--t must be an integer between 1 and 4096")
+            Error("--t must be an integer between 1 and 4096")
           )
         }
 
-        it("returns a Left if --t is 0") {
+        it("returns a Error if --t is 0") {
           Config.parse(List(), Map("b" -> "1", "t" -> "0")) should ===(
-            Left("--t must be an integer between 1 and 4096")
+            Error("--t must be an integer between 1 and 4096")
           )
         }
 
-        it("returns a Left if --t is negative") {
+        it("returns a Error if --t is negative") {
           Config.parse(List(), Map("b" -> "1", "t" -> "-1")) should ===(
-            Left("--t must be an integer between 1 and 4096")
+            Error("--t must be an integer between 1 and 4096")
           )
         }
       }
 
-      it("returns a Right if --m and --w are set") {
+      it("returns a Go if --m and --w are set") {
         val params = Map("b" -> num, "m" -> "0", "w" -> "1")
         Config.parse(List(), params) should ===(
-          Right(
+          Go(
             Config
               .defaultConfig(BuiltIn(index))
               .copy(
@@ -162,51 +162,51 @@ class ConfigSpec extends Spec {
       }
 
       describe("--m") {
-        it("returns a Left if --m is negative") {
+        it("returns a Error if --m is negative") {
           Config.parse(List(), Map("b" -> num, "m" -> "-1")) should ===(
-            Left("--m must be an integer between 0 and 4096")
+            Error("--m must be an integer between 0 and 4096")
           )
         }
 
-        it("returns a Left if --m is not an integer") {
+        it("returns a Error if --m is not an integer") {
           Config.parse(List(), Map("b" -> num, "m" -> "foo")) should ===(
-            Left("--m must be an integer between 0 and 4096")
+            Error("--m must be an integer between 0 and 4096")
           )
         }
       }
 
       describe("--w") {
-        it("returns a Left if --w is not positive") {
+        it("returns a Error if --w is not positive") {
           Config.parse(List(), Map("b" -> num, "w" -> "0")) should ===(
-            Left("--w must be an integer between 1 and 4096")
+            Error("--w must be an integer between 1 and 4096")
           )
         }
 
-        it("returns a Left if --w is negative") {
+        it("returns a Error if --w is negative") {
           Config.parse(List(), Map("b" -> num, "w" -> "-1")) should ===(
-            Left("--w must be an integer between 1 and 4096")
+            Error("--w must be an integer between 1 and 4096")
           )
         }
 
-        it("returns a Left if --w is not an integer") {
+        it("returns a Error if --w is not an integer") {
           Config.parse(List(), Map("b" -> num, "w" -> "foo")) should ===(
-            Left("--w must be an integer between 1 and 4096")
+            Error("--w must be an integer between 1 and 4096")
           )
         }
       }
 
       describe("--alive-color") {
-        it("returns Left if bad format") {
+        it("returns Error if bad format") {
           val params = Map("b" -> num, "alive-color" -> "0,100,300,")
           Config.parse(List(), params) should ===(
-            Left("--alive-color must be Int,Int,Int between 0-255")
+            Error("--alive-color must be Int,Int,Int between 0-255")
           )
         }
 
-        it("returns Right if good format") {
+        it("returns Go if good format") {
           val params = Map("b" -> num, "alive-color" -> "0,100,255")
           Config.parse(List(), params) should ===(
-            Right(
+            Go(
               Config
                 .defaultConfig(BuiltIn(index))
                 .copy(aliveColor = (0, 100, 255))
@@ -216,17 +216,17 @@ class ConfigSpec extends Spec {
       }
 
       describe("--dead-color") {
-        it("returns Left if bad format") {
+        it("returns Error if bad format") {
           val params = Map("b" -> num, "dead-color" -> "0,100,300,")
           Config.parse(List(), params) should ===(
-            Left("--dead-color must be Int,Int,Int between 0-255")
+            Error("--dead-color must be Int,Int,Int between 0-255")
           )
         }
 
-        it("returns Right if good format") {
+        it("returns Go if good format") {
           val params = Map("b" -> num, "dead-color" -> "0,100,255")
           Config.parse(List(), params) should ===(
-            Right(
+            Go(
               Config
                 .defaultConfig(BuiltIn(index))
                 .copy(deadColor = (0, 100, 255))
@@ -236,17 +236,17 @@ class ConfigSpec extends Spec {
       }
 
       describe("--bg-color") {
-        it("returns Left if bad format") {
+        it("returns Error if bad format") {
           val params = Map("b" -> num, "bg-color" -> "0,100,300,")
           Config.parse(List(), params) should ===(
-            Left("--bg-color must be Int,Int,Int between 0-255")
+            Error("--bg-color must be Int,Int,Int between 0-255")
           )
         }
 
-        it("returns Right if good format") {
+        it("returns Go if good format") {
           val params = Map("b" -> num, "bg-color" -> "0,100,255")
           Config.parse(List(), params) should ===(
-            Right(
+            Go(
               Config
                 .defaultConfig(BuiltIn(index))
                 .copy(bgColor = (0, 100, 255))

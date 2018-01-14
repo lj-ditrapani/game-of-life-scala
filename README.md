@@ -102,7 +102,6 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
-- Make tests pass again
 - Interpreter for free monad
 - Test for free monad
 - Replace main with newMain if successful with free monad

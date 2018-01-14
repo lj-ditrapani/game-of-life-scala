@@ -15,7 +15,7 @@ class TerminatorSpec extends Spec with MockitoSugar {
         val helpTextLoader = mock[HelpTextLoader]
         when(helpTextLoader.load()).thenReturn("help-text")
         val terminator = new Terminator(printer, killer, helpTextLoader)
-        terminator.printErrorHelpAndExit("Printing help text...")
+        terminator.help()
         verify(killer).kill()
         verify(printer).print("help-text")
         verify(printer).print("    1  acorn")
@@ -31,7 +31,7 @@ class TerminatorSpec extends Spec with MockitoSugar {
         val helpTextLoader = mock[HelpTextLoader]
         when(helpTextLoader.load()).thenReturn("help-text")
         val terminator = new Terminator(printer, killer, helpTextLoader)
-        terminator.printErrorHelpAndExit("Fire!")
+        terminator.error("Fire!")
         verify(killer).kill()
         verify(printer).print("\n[ERROR] Fire!\n")
         verify(printer).print("help-text")

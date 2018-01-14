@@ -70,7 +70,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
         stepperFactory
       )
       life.main(params, terminator)
-      verify(terminator).printErrorHelpAndExit("Printing help text...")
+      verify(terminator).help()
     }
 
     it("calls printErrorHelpAndExit when the boardLoader returns a Left") {
@@ -97,7 +97,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
         stepperFactory
       )
       life.main(params, terminator)
-      verify(terminator).printErrorHelpAndExit("Fire!")
+      verify(terminator).error("Fire!")
     }
 
     it("calls a bunch of functions") {
@@ -153,7 +153,8 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
       verify(stepperFactory).apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta))
       verify(stepper).run(grid, Infinity)
       verify(task).runAsync(any[Scheduler])
-      verify(terminator, never()).printErrorHelpAndExit(anyString)
+      verify(terminator, never()).help()
+      verify(terminator, never()).error(anyString)
     }
   }
 }
