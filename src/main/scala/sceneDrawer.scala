@@ -1,8 +1,8 @@
 package info.ditrapani.gameoflife
 
 import config.Config
-import scalafx.scene.canvas.GraphicsContext
-import scalafx.scene.paint.Color
+import javafx.scene.canvas.GraphicsContext
+import javafx.scene.paint.Color
 
 import scala.annotation.tailrec
 

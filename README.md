@@ -1,4 +1,4 @@
-Conway's Game of Life on 2-D toroidal grid in Scala & ScalaFX.
+Conway's Game of Life on 2-D toroidal grid in Scala & JavaFX.
 
 ![glider.gif](http://ditrapani.info/resources/glider.gif)
 
@@ -102,8 +102,8 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
+- Try the free monad for the ...
 - organize/revisit packages
-- get a consistent naming scheme (camel vs snake case)
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap

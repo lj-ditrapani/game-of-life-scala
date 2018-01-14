@@ -2,7 +2,7 @@ package info.ditrapani.gameoflife
 
 import config.{BoardSource, Config}
 import org.scalatest.EitherValues
-import scalafx.scene.paint.Color
+import javafx.scene.paint.Color
 
 final case class Draw(color: Color, x: Int, y: Int, width: Int)
 

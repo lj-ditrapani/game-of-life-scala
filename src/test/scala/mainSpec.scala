@@ -8,7 +8,7 @@ import org.mockito.ArgumentMatchers.{any, anyString, eq => meq}
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatest.EitherValues
 import org.scalatest.mockito.MockitoSugar
-import scalafx.scene.paint.Color
+import javafx.scene.paint.Color
 import terminator.Terminator
 
 class CanvasConfigSpec extends Spec {
@@ -52,7 +52,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
           Right("---\n--+\n+++")
       }
 
-      val javaFxApp = mock[JavaFxApp]
+      val javaFxInit = mock[JavaFxInit]
       val sceneDrawerFactory = mock[SceneDrawerFactory]
       val animatorFactory = mock[AnimatorFactory]
       val stepperFactory = mock[StepperFactory]
@@ -64,7 +64,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
 
       val life = new Main(
         BoardLoaderFake,
-        javaFxApp,
+        javaFxInit,
         sceneDrawerFactory,
         animatorFactory,
         stepperFactory
@@ -79,7 +79,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
           Left("Fire!")
       }
 
-      val javaFxApp = mock[JavaFxApp]
+      val javaFxInit = mock[JavaFxInit]
       val sceneDrawerFactory = mock[SceneDrawerFactory]
       val animatorFactory = mock[AnimatorFactory]
       val stepperFactory = mock[StepperFactory]
@@ -91,7 +91,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
 
       val life = new Main(
         BoardLoaderFake,
-        javaFxApp,
+        javaFxInit,
         sceneDrawerFactory,
         animatorFactory,
         stepperFactory
@@ -108,7 +108,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
           Right(boardStr)
       }
 
-      val javaFxApp = mock[JavaFxApp]
+      val javaFxInit = mock[JavaFxInit]
       val sceneDrawerFactory = mock[SceneDrawerFactory]
       val animatorFactory = mock[AnimatorFactory]
       val stepperFactory = mock[StepperFactory]
@@ -129,7 +129,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
 
       when(params.unnamed).thenReturn(List[String]())
       when(params.named).thenReturn(Map[String, String]("b" -> "1"))
-      when(javaFxApp.init(width, height, color)).thenReturn(boxDrawer)
+      when(javaFxInit.startApp(width, height, color)).thenReturn(boxDrawer)
       when(sceneDrawerFactory.apply(config, boxDrawer)).thenReturn(sceneDrawer)
       when(animatorFactory.apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer)))
         .thenReturn(animator)
@@ -139,7 +139,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
 
       val life = new Main(
         BoardLoaderFake,
-        javaFxApp,
+        javaFxInit,
         sceneDrawerFactory,
         animatorFactory,
         stepperFactory
@@ -147,7 +147,7 @@ class MainSpec extends Spec with MockitoSugar with EitherValues {
       life.main(params, terminator)
       verify(params).unnamed
       verify(params).named
-      verify(javaFxApp).init(width, height, color)
+      verify(javaFxInit).startApp(width, height, color)
       verify(sceneDrawerFactory).apply(config, boxDrawer)
       verify(animatorFactory).apply(any[AtomicReference[Option[Grid]]], meq(sceneDrawer))
       verify(stepperFactory).apply(any[AtomicReference[Option[Grid]]], meq(config.timeDelta))

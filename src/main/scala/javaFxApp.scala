@@ -1,41 +1,57 @@
 package info.ditrapani.gameoflife
 
-import scalafx.application.JFXApp
-import scalafx.scene.canvas.Canvas
-import scalafx.scene.paint.Color
-import scalafx.scene.Scene
+import javafx.application.Application
+import javafx.scene.canvas.Canvas
+import javafx.scene.paint.Color
+import javafx.scene.{Group, Scene}
+import javafx.stage.Stage
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
-trait JavaFxApp {
-  def init(width: Double, height: Double, color: Color): BoxDrawer
+trait JavaFxInit {
+  def startApp(width: Double, height: Double, color: Color): BoxDrawer
 }
 
-class Params(parameters: JFXApp.Parameters) {
-  def unnamed: List[String] = parameters.unnamed.toList
-  def named: Map[String, String] = Map(parameters.named.toSeq: _*)
+class Params(parameters: Application.Parameters) {
+  import scala.collection.JavaConverters._
+  def unnamed: List[String] = parameters.getUnnamed.asScala.toList
+  def named: Map[String, String] = parameters.getNamed.asScala.toMap
 }
 
-object JavaFxAppImpl extends JFXApp with JavaFxApp {
-  new Main(BoardLoaderImpl, this, SceneDrawerFactoryImpl, AnimatorFactoryImpl, StepperFactoryImpl)
-    .main(new Params(parameters), new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl))
-
-  def init(width: Double, height: Double, color: Color): BoxDrawer = {
+class JavaFxInitImpl(stage: Stage) extends JavaFxInit {
+  def startApp(width: Double, height: Double, color: Color): BoxDrawer = {
     val canvas = new Canvas(width, height)
-    canvas.translateX = 0
-    canvas.translateY = 0
+    canvas.setTranslateX(0)
+    canvas.setTranslateY(0)
 
-    val gc = canvas.graphicsContext2D
+    val gc = canvas.getGraphicsContext2D()
     gc.setFill(color)
     gc.fillRect(0, 0, width, height)
 
-    val (w, h) = (width, height)
-    stage = new JFXApp.PrimaryStage {
-      title = "Game of Life by L. J. Di Trapani"
-      scene = new Scene(w, h) {
-        content = canvas
-      }
-    }
-
+    val root = new Group()
+    root.getChildren().add(canvas)
+    val scene = new Scene(root, width, height)
+    stage.setTitle("Game of Life by L. J. Di Trapani")
+    stage.setScene(scene)
+    stage.sizeToScene()
+    stage.show()
     new BoxDrawerImpl(gc)
   }
+}
+
+object NewMain {
+  def main(args: Array[String]): Unit = Application.launch(classOf[NewMain], args: _*)
+}
+
+class NewMain extends Application {
+  override def start(stage: Stage): Unit =
+    new Main(
+      BoardLoaderImpl,
+      new JavaFxInitImpl(stage),
+      SceneDrawerFactoryImpl,
+      AnimatorFactoryImpl,
+      StepperFactoryImpl
+    ).main(
+      new Params(getParameters()),
+      new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl)
+    )
 }

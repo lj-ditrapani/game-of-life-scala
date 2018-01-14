@@ -3,7 +3,7 @@ package info.ditrapani.gameoflife
 import config.Config
 import java.util.concurrent.atomic.AtomicReference
 import monix.execution.Scheduler.Implicits.global
-import scalafx.scene.paint.Color
+import javafx.scene.paint.Color
 import terminator.Terminator
 
 class CanvasConfig(grid: Grid, config: Config) {
@@ -17,7 +17,7 @@ class CanvasConfig(grid: Grid, config: Config) {
 
 class Main(
     boardLoader: BoardLoader,
-    javaFxApp: JavaFxApp,
+    javaFxInit: JavaFxInit,
     sceneDrawerFactory: SceneDrawerFactory,
     animatorFactory: AnimatorFactory,
     stepperFactory: StepperFactory
@@ -40,7 +40,7 @@ class Main(
     val width = canvasConfig.width()
     val height = canvasConfig.height()
     val color = canvasConfig.color()
-    val boxDrawer = javaFxApp.init(width, height, color)
+    val boxDrawer = javaFxInit.startApp(width, height, color)
     val sceneDrawer = sceneDrawerFactory(config, boxDrawer)
     val gridRef = new AtomicReference[Option[Grid]](Some(grid))
     stepperFactory(gridRef, config.timeDelta).run(grid, Infinity).runAsync
