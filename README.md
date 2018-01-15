@@ -105,13 +105,16 @@ TODO
 - Review new free monad design: compare; worth keeping?
 - Review file names & content
 - Review organization
-- Use Task for effects; interpret free monad to Task and combine
+- Interpret free monad to Task instead of doing effects directly
+- Use Task for effects; combine with Task from free monad natural transformation
 - Use EitherT[Effect, A] to eliminate double either unwrapping in main
 - terminator should call close on javafx Application before exit (in place of exit?)?
+- fully test main; (scoverage: 2 error cases untested)
+- Hows about a time based test that ensures the stepper and animator
+  render the first frame and subsequest frame correctly?
 
 - Consider using 2 mutable grids Array[Array[Cell]] dimOf and a aliveCount Array[Array[Int]]
     - one grid is put in AtomicRef for rending and the other is used to to compute the next grid
     - each frame, they swap
     - First, test performance diff; then implement if worth it
-- refactor Life specs
 - try scalamock; switch to scalamock if you like it
