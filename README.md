@@ -1,6 +1,6 @@
 Conway's Game of Life on 2-D toroidal grid in Scala & JavaFX.
 
-![glider.gif](http://ditrapani.info/resources/glider.gif)
+![glider.gif](glider.gif)
 
 
 Download Standalone jar
@@ -71,7 +71,7 @@ Check for dependency updates
 Examples
 --------
 
-![gosper-glider-gun.gif](http://ditrapani.info/resources/gosper-glider-gun.gif)
+![gosper-glider-gun.gif](gosper-glider-gun.gif)
 
 Invocation:
 
@@ -80,7 +80,7 @@ java -jar game-of-life-assembly-x.x.x.jar --m=2 --w=4 --b=8 --t=250 \
     --bg-color=155,155,155 --alive-color=250,180,0 --dead-color=0,120,50
 ```
 
-![box.gif](http://ditrapani.info/resources/box.gif)
+![box.gif](box.gif)
 
 Invocation:
 
