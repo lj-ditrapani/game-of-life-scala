@@ -48,7 +48,7 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
         it("does not compute the next grid, but leaves the grid as is") {
           val grid = Grid.build("---\n-+-\n---").right.value
           val gridRef = new AtomicReference[Option[Grid]](Some(grid))
-          val stepper = StepperFactoryImpl(gridRef, 0)
+          val stepper = new Stepper(gridRef, 0)
           stepper
             .run(grid, Count(1))
             .runAsync
@@ -64,7 +64,7 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
         it("computes the next grid and then does nothing") {
           val grid = Grid.build("----\n++++\n----").right.value
           val gridRef = new AtomicReference[Option[Grid]](None)
-          val stepper = StepperFactoryImpl(gridRef, 0)
+          val stepper = new Stepper(gridRef, 0)
           stepper
             .run(grid, Count(2))
             .runAsync

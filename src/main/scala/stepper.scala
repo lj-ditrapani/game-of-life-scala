@@ -20,18 +20,7 @@ final case class Count(i: Int) extends Iterations {
   def isDone(): Boolean = i <= 0
 }
 
-trait StepperFactory {
-  def apply(gridRef: AtomicReference[Option[Grid]], timeDelta: Int): Stepper
-}
-
-object StepperFactoryImpl extends StepperFactory {
-
-  def apply(gridRef: AtomicReference[Option[Grid]], timeDelta: Int): Stepper =
-    new Stepper(gridRef, timeDelta)
-}
-
 class Stepper(gridRef: AtomicReference[Option[Grid]], timeDelta: Int) {
-
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def run(grid: Grid, iterations: Iterations): Task[Unit] =
     if (iterations.isDone()) {

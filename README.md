@@ -102,9 +102,9 @@ To make the gif animations, I used byzanz:
 TODO
 ----
 
-- Replace main with newMain if successful with free monad
-    - Remove unneeded factories
-    - BoardLoader doesn't need trait anymore?
+- Review new free monad design: compare; worth keeping?
+- Review file names & content
+- Review organization
 - Use Task for effects; interpret free monad to Task and combine
 - Use EitherT[Effect, A] to eliminate double either unwrapping in main
 - terminator should call close on javafx Application before exit (in place of exit?)?
@@ -114,3 +114,4 @@ TODO
     - each frame, they swap
     - First, test performance diff; then implement if worth it
 - refactor Life specs
+- try scalamock; switch to scalamock if you like it

@@ -13,7 +13,7 @@ class AnimatorSpec extends Spec with MockitoSugar with EitherValues {
         val gridRef = new AtomicReference[Option[Grid]](None)
         val sceneDrawer = mock[SceneDrawer]
         an[AssertionError] should be thrownBy {
-          AnimatorFactoryImpl(gridRef, sceneDrawer)
+          new Animator(gridRef, sceneDrawer)
         }
         verify(sceneDrawer, never()).drawScene(any[Grid])
         gridRef.get() shouldBe None
@@ -25,7 +25,7 @@ class AnimatorSpec extends Spec with MockitoSugar with EitherValues {
         val grid = Grid.build("-+-\n-+-\n-+-").right.value
         val gridRef = new AtomicReference[Option[Grid]](Some(grid))
         val sceneDrawer = mock[SceneDrawer]
-        AnimatorFactoryImpl(gridRef, sceneDrawer)
+        new Animator(gridRef, sceneDrawer)
         verify(sceneDrawer, never()).drawScene(grid)
         gridRef.get() shouldBe Some(grid)
       }
@@ -38,7 +38,7 @@ class AnimatorSpec extends Spec with MockitoSugar with EitherValues {
         val grid = Grid.build("-+-\n-+-\n-+-").right.value
         val gridRef = new AtomicReference[Option[Grid]](Some(grid))
         val sceneDrawer = mock[SceneDrawer]
-        val animator = AnimatorFactoryImpl(gridRef, sceneDrawer)
+        val animator = new Animator(gridRef, sceneDrawer)
         gridRef.set(None)
         animator.handle(0)
         verify(sceneDrawer, never()).drawScene(any[Grid])
@@ -51,7 +51,7 @@ class AnimatorSpec extends Spec with MockitoSugar with EitherValues {
         val grid = Grid.build("-+-\n-+-\n-+-").right.value
         val gridRef = new AtomicReference[Option[Grid]](Some(grid))
         val sceneDrawer = mock[SceneDrawer]
-        val animator = AnimatorFactoryImpl(gridRef, sceneDrawer)
+        val animator = new Animator(gridRef, sceneDrawer)
         gridRef.set(Some(grid))
         animator.handle(0)
         verify(sceneDrawer, times(1)).drawScene(grid)

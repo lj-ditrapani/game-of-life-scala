@@ -11,21 +11,10 @@ trait BoxDrawer {
 }
 
 class BoxDrawerImpl(gc: GraphicsContext) extends BoxDrawer {
-
   def draw(color: Color, x: Int, y: Int, width: Int): Unit = {
     gc.setFill(color)
     gc.fillRect(x.toDouble, y.toDouble, width.toDouble, width.toDouble)
   }
-}
-
-trait SceneDrawerFactory {
-  def apply(config: Config, boxDrawer: BoxDrawer): SceneDrawer
-}
-
-object SceneDrawerFactoryImpl extends SceneDrawerFactory {
-
-  def apply(config: Config, boxDrawer: BoxDrawer): SceneDrawer =
-    new SceneDrawer(config, boxDrawer)
 }
 
 class SceneDrawer(config: Config, boxDrawer: BoxDrawer) {

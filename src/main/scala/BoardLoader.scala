@@ -4,12 +4,7 @@ import config.{BoardSource, BuiltIn, Config, File}
 
 import scala.util.{Try, Success, Failure}
 
-trait BoardLoader {
-  def getBoardStr(boardSource: BoardSource): Either[String, String]
-}
-
-object BoardLoaderImpl extends BoardLoader {
-
+object BoardLoader {
   def getBoardStr(boardSource: BoardSource): Either[String, String] =
     boardSource match {
       case BuiltIn(index) =>

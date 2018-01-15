@@ -21,7 +21,7 @@ class SceneDrawerSpec extends Spec with EitherValues {
     it("draws the cells as a series of boxes") {
       val config: Config = Config.defaultConfig(BuiltIn(1))
       val boxDrawer = new BoxDrawerFake()
-      val sceneDrawer = SceneDrawerFactoryImpl(config, boxDrawer)
+      val sceneDrawer = new SceneDrawer(config, boxDrawer)
       val grid = Grid.build("--+\n+--\n++-").right.value
       sceneDrawer.drawScene(grid)
       val alive = Color.rgb(200, 220, 255)
