@@ -1,6 +1,6 @@
 package info.ditrapani.gameoflife
 
-import cats.{Id, ~>}
+import cats.~>
 import effects.EffectA
 import effects.{Help, Error, LoadBoard, InitJavaFx, CreateSceneDrawer, StartStepper, StartAnimator}
 import javafx.application.Application
@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.scene.{Group, Scene}
 import javafx.stage.Stage
+import monix.eval.Task
 import terminator.{Terminator, PrinterImpl, KillerImpl, HelpTextLoaderImpl}
 
 class Params(parameters: Application.Parameters) {
@@ -42,31 +43,38 @@ object JavaFxApp {
 }
 
 class JavaFxApp extends Application {
+  import monix.execution.Scheduler.Implicits.global
   override def start(stage: Stage): Unit =
-    Main.main(new Params(getParameters())).foldMap(new Compiler(stage))
+    Main
+      .main(new Params(getParameters()))
+      .foldMap(new Compiler(stage))
+      .runAsync
+      .onComplete(_ => (): Unit)
 }
 
-class Compiler(stage: Stage) extends (EffectA ~> Id) {
+class Compiler(stage: Stage) extends (EffectA ~> Task) {
   import monix.execution.Scheduler.Implicits.global
   private val terminator = new Terminator(PrinterImpl, KillerImpl, HelpTextLoaderImpl)
   private val javaFxInit = new JavaFxInit(stage)
 
-  def apply[A](fa: EffectA[A]): Id[A] =
+  def apply[A](fa: EffectA[A]): Task[A] =
     fa match {
       case Help =>
-        terminator.help()
+        Task.eval { terminator.help() }
       case Error(s) =>
-        terminator.error(s)
+        Task.eval { terminator.error(s) }
       case LoadBoard(boardSource) =>
-        BoardLoader.getBoardStr(boardSource)
+        Task.eval { BoardLoader.getBoardStr(boardSource) }
       case InitJavaFx(width, height, color) =>
-        javaFxInit.startApp(width, height, color)
+        Task.eval { javaFxInit.startApp(width, height, color) }
       case CreateSceneDrawer(config, boxDrawer) =>
-        new SceneDrawer(config, boxDrawer)
+        Task.eval { new SceneDrawer(config, boxDrawer) }
       case StartStepper(gridRef, timeDelta, grid) =>
-        new Stepper(gridRef, timeDelta).run(grid, Infinity).runAsync
-        (): Unit
+        Task.eval {
+          new Stepper(gridRef, timeDelta).run(grid, Infinity).runAsync
+          (): Unit
+        }
       case StartAnimator(gridRef, sceneDrawer) =>
-        new Animator(gridRef, sceneDrawer).run()
+        Task.eval { new Animator(gridRef, sceneDrawer).run() }
     }
 }
