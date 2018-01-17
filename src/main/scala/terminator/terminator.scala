@@ -19,7 +19,7 @@ object PrinterImpl extends Printer {
 }
 
 object KillerImpl extends Killer {
-  def kill(): Unit = System.exit(0)
+  def kill(): Unit = javafx.application.Platform.exit()
 }
 
 object HelpTextLoaderImpl extends HelpTextLoader {
