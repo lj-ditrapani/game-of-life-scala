@@ -24,7 +24,7 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.monix" %% "monix-eval" % "2.3.2",
+  "io.monix" %% "monix-eval" % "3.0.0-M3",
   "org.typelevel" %% "cats-free" % "1.0.1",
   "org.mockito" % "mockito-core" % "2.13.0" % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test"
@@ -34,5 +34,5 @@ wartremoverWarnings ++= Warts.allBut(
   Wart.NonUnitStatements
 )
 
-scalafmtVersion in ThisBuild := "1.3.0"
+scalafmtVersion in ThisBuild := "1.4.0"
 scalafmtOnCompile in ThisBuild := true

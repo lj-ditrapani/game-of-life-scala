@@ -57,6 +57,7 @@ The compile task also runs scalafmt & wartremover.
 
     sbt test            # or anything that runs compile
     sbt scalastyle
+    sbt test:scalastyle
 
 Test coverage
 
