@@ -2,7 +2,7 @@ lazy val root = (project in file(".")).settings(
   name := "game-of-life",
   version := "1.4.2",
   scalaVersion := "2.12.4",
-  organization := "ditrapani.info",
+  organization := "info.ditrapani",
   // Fork a new JVM for 'run' and 'test:run', to
   // avoid JavaFX double initialization problems
   fork := true
