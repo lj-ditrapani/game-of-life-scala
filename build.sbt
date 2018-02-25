@@ -1,6 +1,6 @@
 lazy val root = (project in file(".")).settings(
   name := "game-of-life",
-  version := "1.4.1",
+  version := "1.4.2",
   scalaVersion := "2.12.4",
   organization := "ditrapani.info",
   // Fork a new JVM for 'run' and 'test:run', to
@@ -26,8 +26,8 @@ scalacOptions ++= Seq(
 libraryDependencies ++= Seq(
   "io.monix" %% "monix-eval" % "3.0.0-M3",
   "org.typelevel" %% "cats-free" % "1.0.1",
-  "org.mockito" % "mockito-core" % "2.13.0" % "test",
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+  "org.mockito" % "mockito-core" % "2.15.0" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 wartremoverWarnings ++= Warts.allBut(
   Wart.Equals,
