@@ -48,7 +48,7 @@ class JavaFxApp extends Application {
     Main
       .main(new Params(getParameters()))
       .foldMap(new Compiler(stage))
-      .runAsync
+      .runToFuture
       .onComplete(_ => (): Unit)
 }
 
@@ -71,7 +71,7 @@ class Compiler(stage: Stage) extends (EffectA ~> Task) {
         Task.eval { new SceneDrawer(config, boxDrawer) }
       case StartStepper(gridRef, timeDelta, grid) =>
         Task.eval {
-          new Stepper(gridRef, timeDelta).run(grid, Infinity).runAsync
+          new Stepper(gridRef, timeDelta).run(grid, Infinity).runToFuture
           (): Unit
         }
       case StartAnimator(gridRef, sceneDrawer) =>

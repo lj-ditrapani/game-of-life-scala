@@ -28,7 +28,7 @@ class GridSpec extends Spec {
       for (test <- tests) {
         val (row, column, count) = test
         val either = Grid.build(str)
-        val result = either.fold(x => -1, _.countAliveNeighbors(row, column))
+        val result = either.fold(_ => -1, _.countAliveNeighbors(row, column))
         it(s"returns $count at ($row, $column) for given grid") {
           result should be(count)
         }

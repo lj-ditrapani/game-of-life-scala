@@ -1,7 +1,7 @@
 lazy val root = (project in file(".")).settings(
   name := "game-of-life",
   version := "1.4.2",
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.8",
   organization := "info.ditrapani",
   // Fork a new JVM for 'run' and 'test:run', to
   // avoid JavaFX double initialization problems
@@ -24,9 +24,9 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.monix" %% "monix-eval" % "3.0.0-M3",
-  "org.typelevel" %% "cats-free" % "1.0.1",
-  "org.mockito" % "mockito-core" % "2.15.0" % "test",
+  "io.monix" %% "monix-eval" % "3.0.0-RC2",
+  "org.typelevel" %% "cats-free" % "1.5.0",
+  "org.mockito" % "mockito-core" % "2.23.4" % "test",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 wartremoverWarnings ++= Warts.allBut(
@@ -34,5 +34,4 @@ wartremoverWarnings ++= Warts.allBut(
   Wart.NonUnitStatements
 )
 
-scalafmtVersion in ThisBuild := "1.4.0"
 scalafmtOnCompile in ThisBuild := true

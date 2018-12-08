@@ -51,8 +51,8 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
           val stepper = new Stepper(gridRef, 0)
           stepper
             .run(grid, Count(1))
-            .runAsync
-            .map(unused => {
+            .runToFuture
+            .map(_ => {
               gridRef.get().value.toString shouldBe "---\n-+-\n---"
             })
         }
@@ -67,8 +67,8 @@ class StepperImplSpec extends AsyncSpec with EitherValues with OptionValues {
           val stepper = new Stepper(gridRef, 0)
           stepper
             .run(grid, Count(2))
-            .runAsync
-            .map(unused => {
+            .runToFuture
+            .map(_ => {
               gridRef.get().value.toString shouldBe "++++\n++++\n++++"
             })
         }
