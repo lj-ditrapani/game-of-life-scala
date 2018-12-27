@@ -9,7 +9,6 @@ lazy val root = (project in file(".")).settings(
 )
 
 scalacOptions ++= Seq(
-  "-target:jvm-1.8",
   "-deprecation",
   "-encoding",
   "UTF-8",
@@ -24,6 +23,8 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "org.openjfx" % "javafx-graphics" % "11.0.1" classifier "linux",
+  "org.openjfx" % "javafx-base" % "11.0.1" classifier "linux",
   "io.monix" %% "monix-eval" % "3.0.0-RC2",
   "org.typelevel" %% "cats-free" % "1.5.0",
   "org.mockito" % "mockito-core" % "2.23.4" % "test",
@@ -35,3 +36,8 @@ wartremoverWarnings ++= Warts.allBut(
 )
 
 scalafmtOnCompile in ThisBuild := true
+
+assemblyMergeStrategy in assembly := {
+ case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+ case x => MergeStrategy.first
+}

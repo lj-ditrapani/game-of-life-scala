@@ -14,11 +14,15 @@ Usage
 
 Example
 
-    java -jar game-of-life-assembly-x.x.x.jar --b=2
+    java \
+    --module-path $PATH_TO_FX --add-modules=javafx.graphics \
+    -jar game-of-life-assembly-x.x.x.jar --b=2
 
 For more details and list of built-in game boards:
 
-    java -jar game-of-life-assembly-x.x.x.jar --help
+    java \
+    --module-path $PATH_TO_FX --add-modules=javafx.graphics \
+    -jar game-of-life-assembly-x.x.x.jar --help
 
 See
 [src/main/resources/help.txt](https://github.com/lj-ditrapani/game-of-life-scala/blob/master/src/main/resources/help.txt)
@@ -28,25 +32,17 @@ for documentation.
 Dependencies
 ------------
 
-Requires Java 8 and javaFX.
-Java 8 distributions from Oracle include the javaFX runtime.
+Requires Java 11 and openjfx 11.0.1.
 
-If using openjdk-8-jdk on linux, you may need to additionally install
-the openjfx package to get the javaFX runtime.  For example,
+Install javafx 11.0.1:  https://openjfx.io/openjfx-docs/#install-javafx
 
-Ubuntu/Debian
-
-    sudo apt-get install openjfx
-
-Arch
-
-    sudo pacman -S java-openjfx
+run the jar with --module-path $PATH_TO_FX --add-modules=javafx.graphics
 
 
 Dev
 ---
 
-Generate a standalone jar for java 8
+Generate a standalone jar for java 11
 
     sbt assembly
 
